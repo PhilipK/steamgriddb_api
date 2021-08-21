@@ -1,9 +1,12 @@
-mod grids;
+mod images;
 mod shared_settings;
 mod queries;
 mod platforms;
 mod games;
 mod author;
+mod styles;
+mod dimensions;
+mod query_parameters;
 
 
 pub struct SteamGridDBApi {

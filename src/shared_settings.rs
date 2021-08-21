@@ -25,6 +25,27 @@ impl ToQueryValue for MimeType {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum MimeTypeLogo {
+    #[serde(rename = "image/png")]
+    Png,
+    #[serde(rename = "image/webp")]
+    Webp,
+}
+
+impl ToQueryValue for MimeTypeLogo {
+    fn to_query_value(&self) -> QeuryValue {
+        QeuryValue {
+            name: "mimes".to_string(),
+            value: match self {
+                MimeTypeLogo::Png => "image/png",
+                MimeTypeLogo::Webp => "image/webp",
+            }
+            .to_string(),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ImageType {
     Static,

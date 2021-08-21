@@ -1,151 +1,90 @@
 use crate::{
-    author::Author,
     platforms::Platform,
-    queries::{
-        parameters_to_qeury, to_qeury_string, to_qeury_string_single, QeuryValue, ToQueryValue,
-        ToQuerys,
-    },
-    shared_settings::{AnimtionType, Humor, MimeType, Nsfw},
+    queries::ToQuerys,
+    query_parameters::{GridQueryParameters, QueryType},
+    shared_settings::MimeType,
+    styles::Style,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::*;
+
+use crate::author::Author;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum GridStyle {
-    #[serde(rename = "alternate")]
-    Alternate,
-    #[serde(rename = "blurred")]
-    Blurred,
-    #[serde(rename = "white_logo")]
-    WhiteLogo,
-    #[serde(rename = "material")]
-    Material,
-    #[serde(rename = "no_logo")]
-    NoLogo,
+pub struct Image {
+    pub id: u32,
+    pub score: u32,
+    pub style: Style,
+    pub width: u32,
+    pub height: u32,
+    pub nsfw: bool,
+    pub humor: bool,
+    pub notes: Option<String>,
+    pub mime: MimeType,
+    pub language: String,
+    pub url: String,
+    pub thumb: String,
+    pub lock: bool,
+    pub epilepsy: bool,
+    pub upvotes: u32,
+    pub downvotes: u32,
+    pub author: Author,
 }
 
-impl ToQueryValue for GridStyle {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "styles".to_string(),
-            value: match self {
-                GridStyle::Alternate => "alternate",
-                GridStyle::Blurred => "blurred",
-                GridStyle::WhiteLogo => "white_logo",
-                GridStyle::Material => "material",
-                GridStyle::NoLogo => "no_logo",
-            }
-            .to_string(),
-        }
-    }
+pub fn get_images_by_game_id_url(base_url: &str, game_id: &str, config: &QueryType) -> String {
+    get_images_by_game_ids_url(base_url, &[game_id], config)
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-
-pub enum GridDimentions {
-    #[serde(rename = "460x215")]
-    D460x215,
-    #[serde(rename = "920x430")]
-    D920x430,
-    #[serde(rename = "600x900")]
-    D600x900,
-    #[serde(rename = "342x482")]
-    D342x482,
-    #[serde(rename = "660x930")]
-    D660x930,
-    #[serde(rename = "512x512")]
-    D512x512,
-    #[serde(rename = "1024x1024")]
-    D1024x1024,
-}
-
-impl ToQueryValue for GridDimentions {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "dimensions".to_string(),
-            value: match self {
-                GridDimentions::D460x215 => "460x215",
-                GridDimentions::D920x430 => "920x430",
-                GridDimentions::D600x900 => "600x900",
-                GridDimentions::D342x482 => "342x482",
-                GridDimentions::D660x930 => "660x930",
-                GridDimentions::D512x512 => "512x512",
-                GridDimentions::D1024x1024 => "1024x1024",
-            }
-            .to_string(),
-        }
-    }
-}
-
-pub fn get_grids_by_game_id_url(
-    base_url: &str,
-    game_id: &str,
-    config: Option<&GridConfig>,
-) -> String {
-    get_grids_by_game_ids_url(base_url, &[game_id], config)
-}
-
-#[derive(Default)]
-pub struct GridConfig<'a> {
-    styles: Option<&'a [GridStyle]>,
-    dimentions: Option<&'a [GridDimentions]>,
-    mimes: Option<&'a [MimeType]>,
-    types: Option<&'a [AnimtionType]>,
-    nsfw: Option<&'a Nsfw>,
-    humor: Option<&'a Humor>,
-}
-
-impl ToQuerys for GridConfig<'_> {
-    fn to_querys(&self) -> String {
-        parameters_to_qeury(&[
-            to_qeury_string(self.styles),
-            to_qeury_string(self.dimentions),
-            to_qeury_string(self.mimes),
-            to_qeury_string(self.types),
-            to_qeury_string_single(self.nsfw),
-            to_qeury_string_single(self.humor),
-        ])
-    }
-}
-
-pub fn get_grids_by_game_ids_url(
-    base_url: &str,
-    game_ids: &[&str],
-    grid_config: Option<&GridConfig>,
-) -> String {
+pub fn get_images_by_game_ids_url(base_url: &str, game_ids: &[&str], config: &QueryType) -> String {
     let game_ids_str = game_ids.join(",");
-    let url_without_query = format!("{}/grids/game/{}", base_url, game_ids_str);
-    match grid_config {
-        Some(grid_config) => format!("{}?{}", url_without_query, grid_config.to_querys()),
-        None => url_without_query,
+    let query_type_str = match config {
+        QueryType::Grid(_) => "grids",
+        QueryType::Hero(_) => "heroes",
+        QueryType::Logo(_) => "logos",
+        QueryType::Icon(_) => "icons",
+    };
+    let url_without_query = format!("{}/{}/game/{}", base_url, query_type_str, game_ids_str);
+    let query_string = config.to_querys();
+    if query_string.is_empty() {
+        url_without_query
+    } else {
+        format!("{}?{}", url_without_query, query_string)
     }
 }
 
-pub fn get_grids_by_platform_id_url(
+pub fn get_images_by_platform_id_url(
     base_url: &str,
     platform: &Platform,
     game_ids: &str,
-    grid_config: Option<&GridConfig>,
+    grid_config: &QueryType,
 ) -> String {
-    get_grids_by_platform_ids_url(base_url, platform, &[game_ids], grid_config)
+    get_images_by_platform_ids_url(base_url, platform, &[game_ids], grid_config)
 }
 
-pub fn get_grids_by_platform_ids_url(
+pub fn get_images_by_platform_ids_url(
     base_url: &str,
     platform: &Platform,
     game_ids: &[&str],
-    grid_config: Option<&GridConfig>,
+    config: &QueryType,
 ) -> String {
     let game_ids_str = game_ids.join(",");
+    let query_type_str = match config {
+        QueryType::Grid(_) => "grids",
+        QueryType::Hero(_) => "heroes",
+        QueryType::Logo(_) => "logos",
+        QueryType::Icon(_) => "icons",
+    };
     let url_without_query = format!(
-        "{}/grids/{}/{}",
+        "{}/{}/{}/{}",
         base_url,
+        query_type_str,
         <&Platform as Into<String>>::into(platform),
         game_ids_str
     );
-    match grid_config {
-        Some(grid_config) => format!("{}?{}", url_without_query, grid_config.to_querys()),
-        None => url_without_query,
+    let query_string = config.to_querys();
+    if query_string.is_empty() {
+        url_without_query
+    } else {
+        format!("{}?{}", url_without_query, query_string)
     }
 }
 
@@ -156,7 +95,7 @@ pub struct SteamGridDbError {
 
 type SteamGridDbResult<T> = std::result::Result<T, SteamGridDbError>;
 
-fn inner_single_id_to_result(inner: InnerGridsSingleIdResponse) -> SteamGridDbResult<Vec<Grid>> {
+fn inner_single_id_to_result(inner: InnerGridsSingleIdResponse) -> SteamGridDbResult<Vec<Image>> {
     if !inner.success {
         std::result::Result::Err(SteamGridDbError {
             errors: inner.errors,
@@ -175,7 +114,7 @@ fn inner_single_id_to_result(inner: InnerGridsSingleIdResponse) -> SteamGridDbRe
 
 fn inner_multiple_ids_to_result(
     inner: InnerGridsMultipleIdsResponse,
-) -> SteamGridDbResult<Vec<SteamGridDbResult<Grid>>> {
+) -> SteamGridDbResult<Vec<SteamGridDbResult<Image>>> {
     if !inner.success {
         std::result::Result::Err(SteamGridDbError {
             errors: inner.errors,
@@ -232,7 +171,7 @@ struct InnerGridsMultipleIdsResponse {
 #[derive(Serialize, Deserialize, Debug)]
 struct InnerGridsSingleIdResponse {
     pub success: bool,
-    pub data: Option<Vec<Grid>>,
+    pub data: Option<Vec<Image>>,
     pub status: Option<u32>,
     pub errors: Option<Vec<String>>,
 }
@@ -241,47 +180,34 @@ struct InnerGridsSingleIdResponse {
 struct InnerGridResponse {
     pub success: bool,
     pub status: u32,
-    pub data: Option<Vec<Grid>>,
+    pub data: Option<Vec<Image>>,
     pub errors: Option<Vec<String>>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Grid {
-    pub id: u32,
-    pub score: u32,
-    pub style: GridStyle,
-    pub width: u32,
-    pub height: u32,
-    pub nsfw: bool,
-    pub humor: bool,
-    pub notes: Option<String>,
-    pub mime: MimeType,
-    pub language: String,
-    pub url: String,
-    pub thumb: String,
-    pub lock: bool,
-    pub epilepsy: bool,
-    pub upvotes: u32,
-    pub downvotes: u32,
-    pub author: Author,
 }
 
 #[cfg(test)]
 mod tests {
 
+    use crate::{
+        dimensions::{GridDimentions, HeroDimentions},
+        query_parameters::HeroQueryParameters,
+        shared_settings::{AnimtionType, Humor, Nsfw},
+    };
+
     use super::*;
+
+    use QueryType::*;
 
     #[test]
     fn get_grids_by_game_ids_url_test_single_no_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_grids_by_game_ids_url(base_url, &["13136"], None);
+        let url = get_images_by_game_ids_url(base_url, &["13136"], &Grid(None));
         assert_eq!("https://www.steamgriddb.com/api/v2/grids/game/13136", url);
     }
 
     #[test]
     fn get_grids_by_game_ids_url_test_multiple_no_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_grids_by_game_ids_url(base_url, &["13136", "14065"], None);
+        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(None));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065",
             url
@@ -291,9 +217,9 @@ mod tests {
     #[test]
     fn get_grids_by_game_ids_url_test_multiple_styles_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let mut config = GridConfig::default();
-        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
-        let url = get_grids_by_game_ids_url(base_url, &["13136", "14065"], Some(&config));
+        let mut config = GridQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
+        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred",
             url
@@ -303,20 +229,21 @@ mod tests {
     #[test]
     fn get_grids_by_game_id_url_test_multiple_styles_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let mut config = GridConfig::default();
-        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
-        let actual = get_grids_by_game_id_url(base_url, "13136", Some(&config));
-        let expected = get_grids_by_game_ids_url(base_url, &["13136"], Some(&config));
+        let mut config = GridQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
+        let grid_config = Grid(Some(config));
+        let actual = get_images_by_game_id_url(base_url, "13136", &grid_config);
+        let expected = get_images_by_game_ids_url(base_url, &["13136"], &grid_config);
         assert_eq!(actual, expected);
     }
 
     #[test]
     fn get_grids_by_game_ids_url_test_multiple_styles_multiple_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let mut config = GridConfig::default();
-        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
+        let mut config = GridQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
         config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
-        let url = get_grids_by_game_ids_url(base_url, &["13136", "14065"], Some(&config));
+        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred&types=animated,static",
             url
@@ -326,14 +253,14 @@ mod tests {
     #[test]
     fn get_grids_by_game_ids_url_test_multiple_styles_full_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let mut config = GridConfig::default();
-        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
+        let mut config = GridQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
         config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
         config.humor = Some(&Humor::Any);
         config.nsfw = Some(&Nsfw::False);
         config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
         config.dimentions = Some(&[GridDimentions::D1024x1024, GridDimentions::D920x430]);
-        let url = get_grids_by_game_ids_url(base_url, &["13136", "14065"], Some(&config));
+        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
@@ -341,23 +268,63 @@ mod tests {
     }
 
     #[test]
+    fn get_heroes_by_game_ids_url_test_multiple_styles_full_config() {
+        let base_url = "https://www.steamgriddb.com/api/v2";
+        let mut config = HeroQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
+        config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
+        config.humor = Some(&Humor::Any);
+        config.nsfw = Some(&Nsfw::False);
+        config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
+        config.dimentions = Some(&[HeroDimentions::D1600x650, HeroDimentions::D3840x1240]);
+        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Hero(Some(config)));
+        assert_eq!(
+            "https://www.steamgriddb.com/api/v2/heroes/game/13136,14065?styles=alternate,blurred&dimensions=1600x650,3840x1240&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
+            url
+        );
+    }
+
+    #[test]
     fn get_grids_by_platform_ids_url_test() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let mut config = GridConfig::default();
-        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
+        let mut config = GridQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
         config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
         config.humor = Some(&Humor::Any);
         config.nsfw = Some(&Nsfw::False);
         config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
         config.dimentions = Some(&[GridDimentions::D1024x1024, GridDimentions::D920x430]);
-        let url = get_grids_by_platform_ids_url(
+        let url = get_images_by_platform_ids_url(
             base_url,
             &Platform::EpicGameStore,
             &["13136", "14065"],
-            Some(&config),
+            &Grid(Some(config)),
         );
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/egs/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
+            url
+        );
+    }
+
+    #[test]
+
+    fn get_heroes_by_platform_ids_url_test() {
+        let base_url = "https://www.steamgriddb.com/api/v2";
+        let mut config = HeroQueryParameters::default();
+        config.styles = Some(&[Style::Alternate, Style::Blurred]);
+        config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
+        config.humor = Some(&Humor::Any);
+        config.nsfw = Some(&Nsfw::False);
+        config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
+        config.dimentions = Some(&[HeroDimentions::D3840x1240]);
+        let url = get_images_by_platform_ids_url(
+            base_url,
+            &Platform::BattleNet,
+            &["13136", "14065"],
+            &Hero(Some(config)),
+        );
+        assert_eq!(
+            "https://www.steamgriddb.com/api/v2/heroes/bnet/13136,14065?styles=alternate,blurred&dimensions=3840x1240&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
         );
     }
@@ -379,6 +346,20 @@ mod tests {
         let first_grid = grids.iter().next().unwrap();
         assert_eq!(first_grid.id, 80200);
         assert_eq!(first_grid.nsfw, false);
+    }
+
+    #[test]
+    fn parse_heroes_test() {
+        let json = std::fs::read_to_string("testdata/heroes/heroes.json").unwrap();
+        let game_response: InnerGridsSingleIdResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.data.is_some(), true);
+        let data = game_response.data.unwrap();
+        assert_eq!(data.len(), 18);
+        let first_op = data.iter().next();
+        let first = first_op.unwrap();
+        assert_eq!(first.id, 25973);
+        assert_eq!(first.nsfw, false);
     }
 
     #[test]
