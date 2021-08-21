@@ -1,6 +1,8 @@
 mod grids;
 mod shared_settings;
 mod queries;
+mod platforms;
+mod games;
 
 
 pub struct SteamGridDBApi {
@@ -60,24 +62,9 @@ pub fn get_search_url(base_url: &str, qeury: &str) -> String {
     format!("{}/search/autocomplete/{}", base_url, encode(qeury))
 }
 
-pub fn get_game_by_game_id_url(base_url: &str, game_id: &str) -> String {    
-    format!("{}/games/id/{}", base_url, game_id)
-}
-
-pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: &str) -> String {    
-    format!("{}/games/steam/{}", base_url, steam_app_id)
-}
 
 
 
 pub fn get_grids_by_game_platform_id_url(base_url: &str, game_id: &str) -> String {    
     format!("{}/grids/game/{}", base_url, game_id)
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
 }

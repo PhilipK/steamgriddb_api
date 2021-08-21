@@ -1,4 +1,5 @@
 use crate::{
+    platforms::Platform,
     queries::{
         parameters_to_qeury, to_qeury_string, to_qeury_string_single, QeuryValue, ToQueryValue,
         ToQuerys,
@@ -102,6 +103,34 @@ pub fn get_grids_by_game_ids_url(
     }
 }
 
+pub fn get_grids_by_platform_id_url(
+    base_url: &str,
+    platform: &Platform,
+    game_ids: &str,
+    grid_config: Option<&GridConfig>,
+) -> String {
+    get_grids_by_platform_ids_url(base_url, platform, &[game_ids], grid_config)
+}
+
+pub fn get_grids_by_platform_ids_url(
+    base_url: &str,
+    platform: &Platform,
+    game_ids: &[&str],
+    grid_config: Option<&GridConfig>,
+) -> String {
+    let game_ids_str = game_ids.join(",");
+    let url_without_query = format!(
+        "{}/grids/{}/{}",
+        base_url,
+        <&Platform as Into<String>>::into(platform),
+        game_ids_str
+    );
+    match grid_config {
+        Some(grid_config) => format!("{}?{}", url_without_query, grid_config.to_querys()),
+        None => url_without_query,
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -172,6 +201,23 @@ mod tests {
         let url = get_grids_by_game_ids_url(base_url, &["13136", "14065"], Some(&config));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
+            url
+        );
+    }
+
+    #[test]
+    fn get_grids_by_platform_ids_url_test() {
+        let base_url = "https://www.steamgriddb.com/api/v2";
+        let mut config = GridConfig::default();
+        config.styles = Some(&[GridStyle::Alternate, GridStyle::Blurred]);
+        config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
+        config.humor = Some(&Humor::Any);
+        config.nsfw = Some(&Nsfw::False);
+        config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
+        config.dimentions = Some(&[GridDimentions::D1024x1024, GridDimentions::D920x430]);
+        let url = get_grids_by_platform_ids_url(base_url,&Platform::EpicGameStore, &["13136", "14065"], Some(&config));
+        assert_eq!(
+            "https://www.steamgriddb.com/api/v2/grids/egs/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
         );
     }

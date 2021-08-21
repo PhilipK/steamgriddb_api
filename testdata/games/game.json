@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "id": 13136,
+    "name": "Celeste",
+    "release_date": 1516867200,
+    "types": ["steam", "egs"],
+    "verified": true
+  }
+}
