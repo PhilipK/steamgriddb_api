@@ -5,12 +5,13 @@ use crate::{
         parameters_to_qeury, to_qeury_string, to_qeury_string_single, QeuryValue, ToQueryValue,
         ToQuerys,
     },
+    result::SteamGridDbResult,
     shared_settings::{AnimtionType, Humor, MimeType, Nsfw},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::*;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum GridStyle {
     #[serde(rename = "alternate")]
     Alternate,
@@ -149,22 +150,59 @@ pub fn get_grids_by_platform_ids_url(
     }
 }
 
+fn inner_response_to_publid(
+    inner: InnerGridsResponse,
+) -> SteamGridDbResult<Vec<SteamGridDbResult<Vec<Grid>>>> {
+    if !inner.success {
+        SteamGridDbResult::Error {
+            errors: inner.errors,
+            status: None,
+        }
+    } else {
+        match inner.data {
+            Some(data) => {
+                let inner = data.iter().map(|i| {
+                    if !i.success {
+                        SteamGridDbResult::Error {
+                            errors: i.errors.clone(),
+                            status: Some(i.status),
+                        }
+                    } else {
+                        match i.data.clone() {
+                            Some(data) => SteamGridDbResult::Success(data),
+                            None => SteamGridDbResult::Error {
+                                status: None,
+                                errors: Some(vec!["Could not parse resulting json".to_string()]),
+                            },
+                        }
+                    }
+                });
+                SteamGridDbResult::Success(inner.collect())
+            }
+            None => SteamGridDbResult::Error {
+                status: None,
+                errors: Some(vec!["Could not parse resulting json".to_string()]),
+            },
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
-pub struct GridsResponse {
+struct InnerGridsResponse {
     pub success: bool,
-    pub data: Option<Vec<GridResponse>>,
+    pub data: Option<Vec<InnerGridResponse>>,
     pub errors: Option<Vec<String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct GridResponse {
+struct InnerGridResponse {
     pub success: bool,
     pub status: u32,
     pub data: Option<Vec<Grid>>,
     pub errors: Option<Vec<String>>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Grid {
     pub id: u32,
     pub score: u32,
@@ -284,7 +322,7 @@ mod tests {
     #[test]
     fn parse_grids_test() {
         let json = std::fs::read_to_string("testdata/grids/grids.json").unwrap();
-        let game_response: GridsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerGridsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
@@ -300,11 +338,10 @@ mod tests {
         assert_eq!(first_grid.nsfw, false);
     }
 
-
     #[test]
     fn parse_grids_with_error_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
-        let game_response: GridsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerGridsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
@@ -313,17 +350,48 @@ mod tests {
         it.next();
         let second_op = it.next();
         let second = second_op.unwrap();
-        assert_eq!(false,second.success);
+        assert_eq!(false, second.success);
         assert_eq!(second.status, 404);
         assert_eq!(second.errors, Some(vec!["Game not found".to_string()]));
     }
 
-        #[test]
+    #[test]
     fn parse_grids_error_test() {
         let json = std::fs::read_to_string("testdata/grids/error.json").unwrap();
-        let game_response: GridsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerGridsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, false);
         assert_eq!(game_response.data.is_some(), false);
-        assert_eq!(game_response.errors, Some(vec!["Asset does not exist".to_string()]));        
+        assert_eq!(
+            game_response.errors,
+            Some(vec!["Asset does not exist".to_string()])
+        );
+    }
+
+    #[test]
+    fn inner_response_to_publid_test() {
+        let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
+        let game_response: InnerGridsResponse = serde_json::from_str(&json).unwrap();
+
+        let games = inner_response_to_publid(game_response);
+        assert_eq!(games.is_error(), false);
+        if let SteamGridDbResult::Success(games) = games {
+            assert_eq!(games.len(), 2);
+            let mut it = games.iter();
+            let first = it.next().unwrap();
+            assert_eq!(first.is_error(), false);
+            if let SteamGridDbResult::Success(games) = first {
+                assert_eq!(games.len(), 1);
+                let first_grid = games.iter().next().unwrap();
+                assert_eq!(first_grid.id, 80200);
+            }
+
+            let next = it.next().unwrap();
+            assert_eq!(next.is_error(), true);
+
+            if let SteamGridDbResult::Error { errors, status } = first {
+                assert_eq!(&Some(404), status);
+                assert_eq!(&Some(vec!["Game not found".to_string()]), errors);
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ mod queries;
 mod platforms;
 mod games;
 mod author;
+mod result;
 
 
 pub struct SteamGridDBApi {

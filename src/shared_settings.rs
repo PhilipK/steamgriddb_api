@@ -1,7 +1,7 @@
 use crate::queries::{QeuryValue, ToQueryValue};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum MimeType {
     #[serde(rename = "image/png")]
     Png,
