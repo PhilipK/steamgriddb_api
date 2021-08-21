@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "data": [
+    {
+      "success": true,
+      "status": 200,
+      "data": [
+        {
+          "id": 80200,
+          "score": 0,
+          "style": "white_logo",
+          "width": 342,
+          "height": 482,
+          "nsfw": false,
+          "humor": false,
+          "notes": "Illustration by BBoyFruit for the Celeste Piano Collections",
+          "mime": "image/png",
+          "language": "en",
+          "url": "https://cdn2.steamgriddb.com/file/sgdb-cdn/grid/0d6728955057895546f6b7c31404c138.png",
+          "thumb": "https://cdn2.steamgriddb.com/file/sgdb-cdn/thumb/0d6728955057895546f6b7c31404c138.jpg",
+          "lock": false,
+          "epilepsy": false,
+          "upvotes": 0,
+          "downvotes": 0,
+          "author": {
+            "name": "QuiGonJinnah",
+            "steam64": "76561198045337884",
+            "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/75/7505e767c82d1ea4f68f53cea518a12ba3a2f946.jpg"
+          }
+        }
+      ]
+    },
+    { "success": false, "status": 404, "errors": ["Game not found"] }
+  ]
+}

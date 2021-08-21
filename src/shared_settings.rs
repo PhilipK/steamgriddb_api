@@ -1,8 +1,13 @@
 use crate::queries::{QeuryValue, ToQueryValue};
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Debug)]
 pub enum MimeType {
+    #[serde(rename = "image/png")]
     Png,
+    #[serde(rename = "image/jpeg")]
     Jpeg,
+    #[serde(rename = "image/webp")]
     Webp,
 }
 
@@ -20,6 +25,7 @@ impl ToQueryValue for MimeType {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub enum ImageType {
     Static,
     Animated,
@@ -78,14 +84,13 @@ impl ToQueryValue for Humor {
     }
 }
 
-
 pub enum AnimtionType {
     Static,
     Animated,
 }
 
 impl ToQueryValue for AnimtionType {
-     fn to_query_value(&self) -> QeuryValue {
+    fn to_query_value(&self) -> QeuryValue {
         QeuryValue {
             name: "types".to_string(),
             value: match self {

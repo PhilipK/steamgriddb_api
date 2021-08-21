@@ -3,6 +3,7 @@ mod shared_settings;
 mod queries;
 mod platforms;
 mod games;
+mod author;
 
 
 pub struct SteamGridDBApi {

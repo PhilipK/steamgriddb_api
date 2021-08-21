@@ -1,0 +1,63 @@
+{
+  "success": true,
+  "data": [
+    {
+      "success": true,
+      "status": 200,
+      "data": [
+        {
+          "id": 80200,
+          "score": 0,
+          "style": "white_logo",
+          "width": 342,
+          "height": 482,
+          "nsfw": false,
+          "humor": false,
+          "notes": "Illustration by BBoyFruit for the Celeste Piano Collections",
+          "mime": "image/png",
+          "language": "en",
+          "url": "https://cdn2.steamgriddb.com/file/sgdb-cdn/grid/0d6728955057895546f6b7c31404c138.png",
+          "thumb": "https://cdn2.steamgriddb.com/file/sgdb-cdn/thumb/0d6728955057895546f6b7c31404c138.jpg",
+          "lock": false,
+          "epilepsy": false,
+          "upvotes": 0,
+          "downvotes": 0,
+          "author": {
+            "name": "QuiGonJinnah",
+            "steam64": "76561198045337884",
+            "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/75/7505e767c82d1ea4f68f53cea518a12ba3a2f946.jpg"
+          }
+        }
+      ]
+    },
+    {
+      "success": true,
+      "status": 200,
+      "data": [
+        {
+          "id": 114920,
+          "score": 0,
+          "style": "alternate",
+          "width": 600,
+          "height": 900,
+          "nsfw": false,
+          "humor": false,
+          "notes": null,
+          "mime": "image/png",
+          "language": "en",
+          "url": "https://cdn2.steamgriddb.com/file/sgdb-cdn/grid/a1f50d124d120a86e98bcf6aba866d5a.png",
+          "thumb": "https://cdn2.steamgriddb.com/file/sgdb-cdn/thumb/a1f50d124d120a86e98bcf6aba866d5a.jpg",
+          "lock": false,
+          "epilepsy": false,
+          "upvotes": 0,
+          "downvotes": 0,
+          "author": {
+            "name": "ULTRAMATON",
+            "steam64": "76561198939341674",
+            "avatar": "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/aa/aa025f50415ac148c052b6c52b198955b76c3008.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}
