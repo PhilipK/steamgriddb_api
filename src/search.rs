@@ -7,7 +7,7 @@ pub fn get_search_url(base_url: &str, qeury: &str) -> String {
 }
 
 
-type InnerSearchResult = crate::response::Response<Vec<SearchResult>>;
+pub(crate) type InnerSearchResult = crate::response::Response<Vec<SearchResult>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SearchResult {
