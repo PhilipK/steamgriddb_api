@@ -2,9 +2,11 @@ use serde::{de::DeserializeOwned, Deserialize};
 
 use crate::{
     images::{
-        get_images_by_game_id_url, get_images_by_game_ids_url, Image,
-        InnerImagesMultipleIdsResponse, InnerImagesSingleIdResponse,
+        get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
+        get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
+        InnerImagesSingleIdResponse,
     },
+    platforms::Platform,
     query_parameters::QueryType,
     response::{response_to_result, response_to_result_flat, SteamGridDbResult},
     search::{get_search_url, InnerSearchResult, SearchResult},
@@ -49,10 +51,10 @@ impl Client {
         config: &QueryType<'a>,
     ) -> Result<SteamGridDbResult<Vec<Image>>, Box<dyn std::error::Error>> {
         let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, config);
-        let resposse = self
+        let response = self
             .make_request::<InnerImagesSingleIdResponse>(url.as_str())
             .await?;
-        Ok(response_to_result(resposse))
+        Ok(response_to_result(response))
     }
 
     pub async fn get_images_for_ids<'a>(
@@ -75,6 +77,32 @@ impl Client {
         let url = get_search_url(self.base_url.as_str(), query);
         let resposne = self.make_request::<InnerSearchResult>(url.as_str()).await?;
         Ok(response_to_result(resposne))
+    }
+
+    pub async fn get_images_for_platform_id<'a>(
+        &self,
+        platform: &Platform,
+        game_id: &str,
+        config: &QueryType<'a>,
+    ) -> Result<SteamGridDbResult<Vec<Image>>, Box<dyn std::error::Error>> {
+        let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, config);
+        let response = self
+            .make_request::<InnerImagesSingleIdResponse>(url.as_str())
+            .await?;
+        Ok(response_to_result(response))
+    }
+
+    pub async fn get_images_for_platform_ids<'a>(
+        &self,
+        platform: &Platform,
+        game_id: &[&str],
+        config: &QueryType<'a>,
+    ) -> Result<SteamGridDbResult<Vec<SteamGridDbResult<Image>>>, Box<dyn std::error::Error>> {
+        let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, config);
+        let resposse = self
+            .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
+            .await?;
+        Ok(response_to_result_flat(resposse))
     }
 
     async fn make_request<'de, T>(&self, url: &str) -> Result<T, Box<dyn std::error::Error>>
