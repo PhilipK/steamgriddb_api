@@ -20,12 +20,7 @@ pub struct Game {
     pub verified: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GameResponse {
-    pub success: bool,
-    pub data: Option<Game>,
-    pub errors: Option<Vec<String>>,
-}
+pub type GameResponse = crate::response::Response<Game>;
 
 #[cfg(test)]
 mod tests {

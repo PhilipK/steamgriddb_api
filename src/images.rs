@@ -89,22 +89,20 @@ pub fn get_images_by_platform_ids_url(
     }
 }
 
-type InnerGridsMultipleIdsResponse = crate::response::Response<crate::response::Response<Image>>;
+pub(crate) type InnerImagesMultipleIdsResponse =
+    crate::response::Response<Vec<crate::response::Response<Vec<Image>>>>;
 
-type InnerGridsSingleIdResponse = crate::response::Response<Image>;
-
-#[derive(Serialize, Deserialize, Debug)]
-struct InnerGridResponse {
-    pub success: bool,
-    pub status: u32,
-    pub data: Option<Vec<Image>>,
-    pub errors: Option<Vec<String>>,
-}
+pub(crate) type InnerImagesSingleIdResponse = crate::response::Response<Vec<Image>>;
 
 #[cfg(test)]
 mod tests {
 
-    use crate::{dimensions::{GridDimentions, HeroDimentions}, query_parameters::HeroQueryParameters, response::{response_to_result, response_to_result_flat}, shared_settings::{AnimtionType, Humor, Nsfw}};
+    use crate::{
+        dimensions::{GridDimentions, HeroDimentions},
+        query_parameters::HeroQueryParameters,
+        response::{response_to_result, response_to_result_flat},
+        shared_settings::{AnimtionType, Humor, Nsfw},
+    };
 
     use super::*;
 
@@ -245,7 +243,7 @@ mod tests {
     #[test]
     fn parse_grids_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_fo_multiple_ids.json").unwrap();
-        let game_response: InnerGridsMultipleIdsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
@@ -264,7 +262,7 @@ mod tests {
     #[test]
     fn parse_heroes_test() {
         let json = std::fs::read_to_string("testdata/heroes/heroes.json").unwrap();
-        let game_response: InnerGridsSingleIdResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
@@ -278,7 +276,7 @@ mod tests {
     #[test]
     fn parse_grids_with_error_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
-        let game_response: InnerGridsMultipleIdsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
@@ -295,7 +293,7 @@ mod tests {
     #[test]
     fn parse_grids_error_test() {
         let json = std::fs::read_to_string("testdata/grids/error.json").unwrap();
-        let game_response: InnerGridsMultipleIdsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, false);
         assert_eq!(game_response.data.is_some(), false);
         assert_eq!(
@@ -307,7 +305,7 @@ mod tests {
     #[test]
     fn parse_single_id_grid() {
         let json = std::fs::read_to_string("testdata/grids/grids_for_single_id.json").unwrap();
-        let game_response: InnerGridsSingleIdResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
         assert_eq!(game_response.success, true);
         assert_eq!(game_response.data.is_some(), true);
         if let Some(data) = game_response.data {
@@ -318,7 +316,7 @@ mod tests {
     #[test]
     fn inner_response_single_to_public_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_for_single_id.json").unwrap();
-        let game_response: InnerGridsSingleIdResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
         let grids = response_to_result(game_response);
         assert_eq!(grids.is_err(), false);
         if let Ok(grids) = grids {
@@ -329,7 +327,7 @@ mod tests {
     #[test]
     fn inner_response_multiple_to_publid_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
-        let game_response: InnerGridsMultipleIdsResponse = serde_json::from_str(&json).unwrap();
+        let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
         let grids = response_to_result_flat(game_response);
         assert_eq!(grids.is_err(), false);
         if let Ok(grids) = grids {

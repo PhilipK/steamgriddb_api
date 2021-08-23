@@ -7,14 +7,14 @@ pub struct SteamGridDbError {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Response<T> {
     pub success: bool,
-    pub data: Option<Vec<T>>,
+    pub data: Option<T>,
     pub status: Option<u32>,
     pub errors: Option<Vec<String>>,
 }
 
 pub type SteamGridDbResult<T> = std::result::Result<T, SteamGridDbError>;
 
-pub fn response_to_result<T>(inner: Response<T>) -> SteamGridDbResult<Vec<T>> {
+pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T>> {
     if !inner.success {
         std::result::Result::Err(SteamGridDbError {
             errors: inner.errors,
@@ -32,7 +32,7 @@ pub fn response_to_result<T>(inner: Response<T>) -> SteamGridDbResult<Vec<T>> {
 }
 
 pub fn response_to_result_flat<T>(
-    inner: Response<Response<T>>,
+    inner: Response<Vec<Response<Vec<T>>>>,
 ) -> SteamGridDbResult<Vec<SteamGridDbResult<T>>>
 where
     T: Clone,

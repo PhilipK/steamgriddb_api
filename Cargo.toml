@@ -9,3 +9,4 @@ edition = "2018"
 urlencoding = "*"
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
+reqwest = { version = "*", features = ["json"] }
