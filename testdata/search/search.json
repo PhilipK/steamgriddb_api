@@ -1,0 +1,107 @@
+{
+  "success": true,
+  "data": [
+    {
+      "name": "Assassin's Creed",
+      "release_date": 1207724400,
+      "verified": true,
+      "id": 1451,
+      "types": ["steam", "gog", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Revelations",
+      "release_date": 1322589600,
+      "verified": true,
+      "id": 1760,
+      "types": ["steam", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed\u00ae III",
+      "release_date": 1353441600,
+      "verified": true,
+      "id": 1937,
+      "types": ["steam", "origin", "uplay", "eshop"]
+    },
+    {
+      "name": "Assassin's Creed Liberation",
+      "release_date": 1389809100,
+      "verified": true,
+      "id": 3328,
+      "types": ["steam"]
+    },
+    {
+      "name": "Assassin's Creed Unity",
+      "release_date": 1415664000,
+      "verified": true,
+      "id": 4174,
+      "types": ["steam", "origin", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Rogue",
+      "release_date": 1426006800,
+      "verified": true,
+      "id": 4985,
+      "types": ["steam", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed II",
+      "release_date": 1267747200,
+      "verified": true,
+      "id": 5820,
+      "types": ["steam", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Syndicate",
+      "release_date": 1447909200,
+      "verified": true,
+      "id": 7580,
+      "types": ["steam", "origin", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Brotherhood",
+      "release_date": 1300813200,
+      "verified": true,
+      "id": 12154,
+      "types": ["steam", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Origins",
+      "release_date": 1509076800,
+      "verified": true,
+      "id": 16351,
+      "types": ["steam", "origin", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed Odyssey",
+      "release_date": 1538755200,
+      "verified": true,
+      "id": 26179,
+      "types": ["steam", "origin", "uplay"]
+    },
+    {
+      "name": "Assassin's Creed: Bloodlines",
+      "verified": true,
+      "id": 36092,
+      "types": []
+    },
+    {
+      "name": "Assassin's Creed Valhalla",
+      "verified": true,
+      "id": 5259692,
+      "types": []
+    },
+    {
+      "name": "Assassin's Creed 3 - Deluxe",
+      "verified": true,
+      "id": 1938,
+      "types": ["steam"]
+    },
+    {
+      "name": "Assassin's Creed Freedom Cry",
+      "release_date": 1393315200,
+      "verified": true,
+      "id": 3810,
+      "types": ["steam", "uplay"]
+    }
+  ]
+}

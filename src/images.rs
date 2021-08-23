@@ -2,6 +2,7 @@ use crate::{
     platforms::Platform,
     queries::ToQuerys,
     query_parameters::{GridQueryParameters, QueryType},
+    response::{SteamGridDbError, SteamGridDbResult},
     shared_settings::MimeType,
     styles::Style,
 };
@@ -88,93 +89,9 @@ pub fn get_images_by_platform_ids_url(
     }
 }
 
-pub struct SteamGridDbError {
-    pub status: Option<u32>,
-    pub errors: Option<Vec<String>>,
-}
+type InnerGridsMultipleIdsResponse = crate::response::Response<crate::response::Response<Image>>;
 
-type SteamGridDbResult<T> = std::result::Result<T, SteamGridDbError>;
-
-fn inner_single_id_to_result(inner: InnerGridsSingleIdResponse) -> SteamGridDbResult<Vec<Image>> {
-    if !inner.success {
-        std::result::Result::Err(SteamGridDbError {
-            errors: inner.errors,
-            status: inner.status,
-        })
-    } else {
-        match inner.data {
-            Some(data) => std::result::Result::Ok(data),
-            None => std::result::Result::Err(SteamGridDbError {
-                errors: Some(vec!["Succes reported but no grids found".to_string()]),
-                status: None,
-            }),
-        }
-    }
-}
-
-fn inner_multiple_ids_to_result(
-    inner: InnerGridsMultipleIdsResponse,
-) -> SteamGridDbResult<Vec<SteamGridDbResult<Image>>> {
-    if !inner.success {
-        std::result::Result::Err(SteamGridDbError {
-            errors: inner.errors,
-            status: None,
-        })
-    } else {
-        match inner.data {
-            Some(data) => {
-                let inner = data.iter().map(|i| {
-                    if !i.success {
-                        std::result::Result::Err(SteamGridDbError {
-                            errors: i.errors.clone(),
-                            status: Some(i.status),
-                        })
-                    } else {
-                        match &i.data {
-                            Some(data) => {
-                                let first = data.iter().next();
-                                match first {
-                                    Some(first) => Ok(first.clone()),
-                                    None => std::result::Result::Err(SteamGridDbError {
-                                        status: None,
-                                        errors: Some(vec![
-                                            "Succes reported but no grids found".to_string()
-                                        ]),
-                                    }),
-                                }
-                            }
-                            None => std::result::Result::Err(SteamGridDbError {
-                                status: None,
-                                errors: i.errors.clone(),
-                            }),
-                        }
-                    }
-                });
-                let inner_res = inner.collect();
-                Ok(inner_res)
-            }
-            None => std::result::Result::Err(SteamGridDbError {
-                status: None,
-                errors: inner.errors,
-            }),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct InnerGridsMultipleIdsResponse {
-    pub success: bool,
-    pub data: Option<Vec<InnerGridResponse>>,
-    pub errors: Option<Vec<String>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct InnerGridsSingleIdResponse {
-    pub success: bool,
-    pub data: Option<Vec<Image>>,
-    pub status: Option<u32>,
-    pub errors: Option<Vec<String>>,
-}
+type InnerGridsSingleIdResponse = crate::response::Response<Image>;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct InnerGridResponse {
@@ -187,11 +104,7 @@ struct InnerGridResponse {
 #[cfg(test)]
 mod tests {
 
-    use crate::{
-        dimensions::{GridDimentions, HeroDimentions},
-        query_parameters::HeroQueryParameters,
-        shared_settings::{AnimtionType, Humor, Nsfw},
-    };
+    use crate::{dimensions::{GridDimentions, HeroDimentions}, query_parameters::HeroQueryParameters, response::{response_to_result, response_to_result_flat}, shared_settings::{AnimtionType, Humor, Nsfw}};
 
     use super::*;
 
@@ -375,7 +288,7 @@ mod tests {
         let second_op = it.next();
         let second = second_op.unwrap();
         assert_eq!(false, second.success);
-        assert_eq!(second.status, 404);
+        assert_eq!(second.status, Some(404));
         assert_eq!(second.errors, Some(vec!["Game not found".to_string()]));
     }
 
@@ -406,7 +319,7 @@ mod tests {
     fn inner_response_single_to_public_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_for_single_id.json").unwrap();
         let game_response: InnerGridsSingleIdResponse = serde_json::from_str(&json).unwrap();
-        let grids = inner_single_id_to_result(game_response);
+        let grids = response_to_result(game_response);
         assert_eq!(grids.is_err(), false);
         if let Ok(grids) = grids {
             assert_eq!(grids.len(), 31);
@@ -417,7 +330,7 @@ mod tests {
     fn inner_response_multiple_to_publid_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
         let game_response: InnerGridsMultipleIdsResponse = serde_json::from_str(&json).unwrap();
-        let grids = inner_multiple_ids_to_result(game_response);
+        let grids = response_to_result_flat(game_response);
         assert_eq!(grids.is_err(), false);
         if let Ok(grids) = grids {
             assert_eq!(grids.len(), 2);

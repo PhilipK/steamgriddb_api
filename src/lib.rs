@@ -1,3 +1,5 @@
+mod response;
+mod search;
 mod images;
 mod shared_settings;
 mod queries;
@@ -61,14 +63,4 @@ pub struct Configuration {
     pub base_url: Option<String>,
 }
 
-pub fn get_search_url(base_url: &str, qeury: &str) -> String {
-    use urlencoding::encode;
-    format!("{}/search/autocomplete/{}", base_url, encode(qeury))
-}
 
-
-
-
-pub fn get_grids_by_game_platform_id_url(base_url: &str, game_id: &str) -> String {    
-    format!("{}/grids/game/{}", base_url, game_id)
-}
