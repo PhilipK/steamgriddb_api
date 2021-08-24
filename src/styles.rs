@@ -51,11 +51,10 @@ impl ToQueryValue for StyleLogo {
         QeuryValue {
             name: "styles".to_string(),
             value: match self {                
-                Official => "official",                 
-                White => "white",                 
-                Black => "black",                
-                Custom => "custom",
-                
+                StyleLogo::Official => "official",                 
+                StyleLogo::White => "white",                 
+                StyleLogo::Black => "black",                
+                StyleLogo::Custom => "custom",
             }
             .to_string(),
         }

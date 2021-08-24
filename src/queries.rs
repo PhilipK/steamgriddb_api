@@ -14,12 +14,9 @@ pub trait ToQueryValue {
 pub fn parameters_to_qeury(parameters: &[Option<String>]) -> String {
     let strings = parameters
         .iter()
-        .filter_map(|f| match f {
-            Some(s) => Some(s.to_owned()),
-            None => None,
-        })
+        .filter_map(|f| f.as_ref().map(|s| s.to_owned()))
         .collect::<Vec<String>>();
-    if strings.len() > 0 {
+    if !strings.is_empty() {
         strings.join("&")
     } else {
         "".to_string()
@@ -41,7 +38,7 @@ where
     T: ToQueryValue,
 {
     match items {
-        Some(items) if items.len() > 0 => {
+        Some(items) if !items.is_empty() => {
             let name = items.first().unwrap().to_query_value().name;
             let value = items
                 .iter()
