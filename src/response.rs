@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+#[derive(Clone, Debug)]
 pub struct SteamGridDbError {
     pub status: Option<u32>,
     pub errors: Option<Vec<String>>,
