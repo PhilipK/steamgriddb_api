@@ -1,9 +1,22 @@
+use std::{error, fmt};
+
 use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug)]
 pub struct SteamGridDbError {
     pub status: Option<u32>,
     pub errors: Option<Vec<String>>,
 }
+impl fmt::Display for SteamGridDbError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "API reported status: {:?} with errors: {:?}",
+            self.status, self.errors
+        )
+    }
+}
+
+impl error::Error for SteamGridDbError {}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Response<T> {

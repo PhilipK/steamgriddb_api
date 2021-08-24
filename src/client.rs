@@ -1,6 +1,7 @@
-use serde::{de::DeserializeOwned, Deserialize};
+use serde::de::DeserializeOwned;
 
 use crate::{
+    games::{get_game_by_game_id_url, Game},
     images::{
         get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
         get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
@@ -49,34 +50,34 @@ impl Client {
         &self,
         game_id: &str,
         config: &QueryType<'a>,
-    ) -> Result<SteamGridDbResult<Vec<Image>>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
         let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, config);
         let response = self
             .make_request::<InnerImagesSingleIdResponse>(url.as_str())
             .await?;
-        Ok(response_to_result(response))
+        Ok(response_to_result(response)?)
     }
 
     pub async fn get_images_for_ids<'a>(
         &self,
         game_id: &[&str],
         config: &QueryType<'a>,
-    ) -> Result<SteamGridDbResult<Vec<SteamGridDbResult<Image>>>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
         let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, config);
 
         let resposse = self
             .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
             .await?;
-        Ok(response_to_result_flat(resposse))
+        Ok(response_to_result_flat(resposse)?)
     }
 
     pub async fn search(
         &self,
         query: &str,
-    ) -> Result<SteamGridDbResult<Vec<SearchResult>>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<SearchResult>, Box<dyn std::error::Error>> {
         let url = get_search_url(self.base_url.as_str(), query);
         let resposne = self.make_request::<InnerSearchResult>(url.as_str()).await?;
-        Ok(response_to_result(resposne))
+        Ok(response_to_result(resposne)?)
     }
 
     pub async fn get_images_for_platform_id<'a>(
@@ -84,12 +85,12 @@ impl Client {
         platform: &Platform,
         game_id: &str,
         config: &QueryType<'a>,
-    ) -> Result<SteamGridDbResult<Vec<Image>>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
         let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, config);
         let response = self
             .make_request::<InnerImagesSingleIdResponse>(url.as_str())
             .await?;
-        Ok(response_to_result(response))
+        Ok(response_to_result(response)?)
     }
 
     pub async fn get_images_for_platform_ids<'a>(
@@ -97,12 +98,30 @@ impl Client {
         platform: &Platform,
         game_id: &[&str],
         config: &QueryType<'a>,
-    ) -> Result<SteamGridDbResult<Vec<SteamGridDbResult<Image>>>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
         let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, config);
         let resposse = self
             .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
             .await?;
-        Ok(response_to_result_flat(resposse))
+        Ok(response_to_result_flat(resposse)?)
+    }
+
+    pub async fn get_game_info_for_id(
+        &self,
+        game_id: &str,
+    ) -> Result<Game, Box<dyn std::error::Error>> {
+        let url = get_game_by_game_id_url(self.base_url.as_str(), game_id);
+        let response = self.make_request::<Game>(url.as_str()).await?;
+        Ok(response)
+    }
+
+    pub async fn get_game_by_steam_app_id(
+        &self,
+        steam_app_id: &str,
+    ) -> Result<Game, Box<dyn std::error::Error>> {
+        let url = get_game_by_game_id_url(self.base_url.as_str(), steam_app_id);
+        let response = self.make_request::<Game>(url.as_str()).await?;
+        Ok(response)
     }
 
     async fn make_request<'de, T>(&self, url: &str) -> Result<T, Box<dyn std::error::Error>>
