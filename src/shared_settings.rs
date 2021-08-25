@@ -11,20 +11,6 @@ pub enum MimeType {
     Webp,
 }
 
-impl ToQueryValue for MimeType {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "mimes".to_string(),
-            value: match self {
-                MimeType::Png => "image/png",
-                MimeType::Jpeg => "image/jpeg",
-                MimeType::Webp => "image/webp",
-            }
-            .to_string(),
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum MimeTypeLogo {
     #[serde(rename = "image/png")]
@@ -33,37 +19,13 @@ pub enum MimeTypeLogo {
     Webp,
 }
 
-impl ToQueryValue for MimeTypeLogo {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "mimes".to_string(),
-            value: match self {
-                MimeTypeLogo::Png => "image/png",
-                MimeTypeLogo::Webp => "image/webp",
-            }
-            .to_string(),
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ImageType {
     Static,
     Animated,
 }
 
-impl ToQueryValue for ImageType {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "image_type".to_string(),
-            value: match self {
-                ImageType::Static => "static",
-                ImageType::Animated => "animated",
-            }
-            .to_string(),
-        }
-    }
-}
+#[derive(Serialize, Deserialize, Debug, Clone)]
 
 pub enum Nsfw {
     True,
@@ -71,19 +33,7 @@ pub enum Nsfw {
     Any,
 }
 
-impl ToQueryValue for Nsfw {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "nsfw".to_string(),
-            value: match self {
-                Nsfw::True => "true",
-                Nsfw::False => "false",
-                Nsfw::Any => "any",
-            }
-            .to_string(),
-        }
-    }
-}
+#[derive(Serialize, Deserialize, Debug, Clone)]
 
 pub enum Humor {
     True,
@@ -105,20 +55,9 @@ impl ToQueryValue for Humor {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+
 pub enum AnimtionType {
     Static,
     Animated,
-}
-
-impl ToQueryValue for AnimtionType {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "types".to_string(),
-            value: match self {
-                AnimtionType::Static => "static",
-                AnimtionType::Animated => "animated",
-            }
-            .to_string(),
-        }
-    }
 }

@@ -1,11 +1,8 @@
 use crate::{
-    platforms::Platform,
-    queries::ToQuerys,
-    query_parameters::{GridQueryParameters, QueryType},
-    response::{SteamGridDbError, SteamGridDbResult},
-    shared_settings::MimeType,
+    platforms::Platform, queries::ToQuerys, query_parameters::QueryType, shared_settings::MimeType,
     styles::Style,
 };
+
 use serde::{Deserialize, Serialize};
 
 use crate::author::Author;
@@ -97,12 +94,7 @@ pub(crate) type InnerImagesSingleIdResponse = crate::response::Response<Vec<Imag
 #[cfg(test)]
 mod tests {
 
-    use crate::{
-        dimensions::{GridDimentions, HeroDimentions},
-        query_parameters::HeroQueryParameters,
-        response::{response_to_result, response_to_result_flat},
-        shared_settings::{AnimtionType, Humor, Nsfw},
-    };
+    use crate::{dimensions::{GridDimentions, HeroDimentions}, query_parameters::{GridQueryParameters, HeroQueryParameters}, response::{SteamGridDbError, response_to_result, response_to_result_flat}, shared_settings::{AnimtionType, Humor, Nsfw}};
 
     use super::*;
 

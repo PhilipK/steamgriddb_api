@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::queries::{QeuryValue, ToQueryValue};
-
 #[derive(Serialize, Deserialize, Debug)]
 pub enum GridDimentions {
     #[serde(rename = "460x215")]
@@ -20,23 +18,6 @@ pub enum GridDimentions {
     D1024x1024,
 }
 
-impl ToQueryValue for GridDimentions {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "dimensions".to_string(),
-            value: match self {
-                GridDimentions::D460x215 => "460x215",
-                GridDimentions::D920x430 => "920x430",
-                GridDimentions::D600x900 => "600x900",
-                GridDimentions::D342x482 => "342x482",
-                GridDimentions::D660x930 => "660x930",
-                GridDimentions::D512x512 => "512x512",
-                GridDimentions::D1024x1024 => "1024x1024",
-            }
-            .to_string(),
-        }
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum HeroDimentions {
@@ -48,19 +29,6 @@ pub enum HeroDimentions {
     D1600x650,
 }
 
-impl ToQueryValue for HeroDimentions {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "dimensions".to_string(),
-            value: match self {
-                HeroDimentions::D1920x620 => "1920x620",
-                HeroDimentions::D3840x1240 => "3840x1240",
-                HeroDimentions::D1600x650 => "1600x650",
-            }
-            .to_string(),
-        }
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum IconDimensions {
@@ -120,43 +88,4 @@ pub enum IconDimensions {
     D768x768,
     #[serde(rename = "1024x1024")]
     D1024x1024,
-}
-
-impl ToQueryValue for IconDimensions {
-    fn to_query_value(&self) -> QeuryValue {
-        QeuryValue {
-            name: "dimensions".to_string(),
-            value: match self {
-                IconDimensions::D16x16 => "16x16",
-                IconDimensions::D20x20 => "20x20",
-                IconDimensions::D24x24 => "24x24",
-                IconDimensions::D28x28 => "28x28",
-                IconDimensions::D32x32 => "32x32",
-                IconDimensions::D40x40 => "40x40",
-                IconDimensions::D48x48 => "48x48",
-                IconDimensions::D54x54 => "54x54",
-                IconDimensions::D57x57 => "57x57",
-                IconDimensions::D60x60 => "60x60",
-                IconDimensions::D64x64 => "64x64",
-                IconDimensions::D72x72 => "72x72",
-                IconDimensions::D76x76 => "76x76",
-                IconDimensions::D80x80 => "80x80",
-                IconDimensions::D96x96 => "96x96",
-                IconDimensions::D114x114 => "114x114",
-                IconDimensions::D120x120 => "120x120",
-                IconDimensions::D128x128 => "128x128",
-                IconDimensions::D144x144 => "144x144",
-                IconDimensions::D152x152 => "152x152",
-                IconDimensions::D160x160 => "160x160",
-                IconDimensions::D180x180 => "180x180",
-                IconDimensions::D192x192 => "192x192",
-                IconDimensions::D194x194 => "194x194",
-                IconDimensions::D256x256 => "256x256",
-                IconDimensions::D512x512 => "512x512",
-                IconDimensions::D768x768 => "768x768",
-                IconDimensions::D1024x1024 => "1024x1024",
-            }
-            .to_string(),
-        }
-    }
 }

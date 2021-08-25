@@ -42,9 +42,9 @@ impl Client {
     pub async fn get_images_for_id<'a>(
         &self,
         game_id: &str,
-        config: &QueryType<'a>,
+        query: &QueryType<'a>,
     ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
-        let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, config);
+        let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, query);
         let response = self
             .make_request::<InnerImagesSingleIdResponse>(url.as_str())
             .await?;
@@ -54,9 +54,9 @@ impl Client {
     pub async fn get_images_for_ids<'a>(
         &self,
         game_id: &[&str],
-        config: &QueryType<'a>,
+        query: &QueryType<'a>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
-        let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, config);
+        let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, query);
 
         let resposse = self
             .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
@@ -77,9 +77,9 @@ impl Client {
         &self,
         platform: &Platform,
         game_id: &str,
-        config: &QueryType<'a>,
+        qeury: &QueryType<'a>,
     ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
-        let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, config);
+        let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, qeury);
         let response = self
             .make_request::<InnerImagesSingleIdResponse>(url.as_str())
             .await?;
@@ -90,9 +90,9 @@ impl Client {
         &self,
         platform: &Platform,
         game_id: &[&str],
-        config: &QueryType<'a>,
+        qeury: &QueryType<'a>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
-        let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, config);
+        let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, qeury);
         let resposse = self
             .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
             .await?;

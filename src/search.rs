@@ -1,11 +1,9 @@
-use crate::platforms::Platform;
 use serde::{Deserialize, Serialize};
 
 pub fn get_search_url(base_url: &str, qeury: &str) -> String {
     use urlencoding::encode;
     format!("{}/search/autocomplete/{}", base_url, encode(qeury))
 }
-
 
 pub(crate) type InnerSearchResult = crate::response::Response<Vec<SearchResult>>;
 
@@ -32,8 +30,6 @@ mod tests {
             url
         );
     }
-
-    use super::*;
 
     #[test]
     fn parse_search_results() {

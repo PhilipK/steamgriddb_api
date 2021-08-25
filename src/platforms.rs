@@ -15,15 +15,3 @@ pub enum Platform{
     #[serde(rename = "flashpoint")]
     Flashpoint
 }
-impl Into<String> for &Platform{
-    fn into(self) -> String {
-        match self {
-            Platform::Steam => "steam",
-            Platform::Origin => "origin",
-            Platform::EpicGameStore => "egs",
-            Platform::BattleNet => "bnet",
-            Platform::Uplay => "uplay",
-            Platform::Flashpoint => "flashpoint",
-        }.to_string()
-    }
-}
