@@ -1,10 +1,17 @@
 use serde::de::DeserializeOwned;
 
-use crate::{games::{get_game_by_game_id_url, Game}, images::{
+use crate::{
+    games::{get_game_by_game_id_url, get_game_by_steam_app_id_url, Game},
+    images::{
         get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
         get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
         InnerImagesSingleIdResponse,
-    }, query_parameters::{Platform, QueryType}, response::{response_to_result, response_to_result_flat, SteamGridDbResult}, search::{get_search_url, InnerSearchResult, SearchResult}, steam_static::SteamStaticUrls};
+    },
+    query_parameters::{Platform, QueryType},
+    response::{response_to_result, response_to_result_flat, SteamGridDbResult},
+    search::{get_search_url, InnerSearchResult, SearchResult},
+    steam_static::SteamStaticUrls,
+};
 
 /// This Client provides a convenient way to interact with the SteamGrid API.
 ///
@@ -26,7 +33,6 @@ use crate::{games::{get_game_by_game_id_url, Game}, images::{
 ///     Ok(())
 ///  }
 /// ```
-
 pub struct Client {
     auth_key: String,
     base_url: String,
@@ -172,10 +178,9 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
-
     /// Fetches images given a list game id's and a query type.
-    /// 
-    /// The resulting list will be a SteamGridDbResult<Image> for each id. 
+    ///
+    /// The resulting list will be a SteamGridDbResult<Image> for each id.
     ///            
     /// # Examples
     /// One image will be fetched for each id.
@@ -206,7 +211,7 @@ impl Client {
 
     /// Search for games given a search query.
     ///     
-    /// The search parameter will be url encoded, so that it will be safe to use.           
+    /// The search query will be url encoded, so that it will be safe to use.           
     ///     
     /// # Examples
     ///
@@ -230,6 +235,22 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
+    /// Fetches images given a platform type, a platform specific game id and a query type.
+    ///    
+    /// # Examples
+    ///    
+    /// ```no_run
+    /// use steamgriddb_api::client::Client;
+    /// use steamgriddb_api::query_parameters::Platform::*;
+    /// use steamgriddb_api::query_parameters::QueryType::*;
+    /// use steamgriddb_api::query_parameters::GridQueryParameters;    
+    ///
+    /// # async fn example() {
+    /// let mut client = Client::new("my_auth_key");    
+    /// let platform = EpicGameStore;
+    /// let epic_games_images = client.get_images_for_platform_id(&platform, "Salt", &Grid(None)).await.unwrap();    
+    /// # }
+    /// ```
     pub async fn get_images_for_platform_id<'a>(
         &self,
         platform: &Platform,
@@ -243,6 +264,25 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
+    /// Fetches images given a platform type, a platform specific game ids and a query type.
+    ///    
+    /// The resulting list will be a SteamGridDbResult<Image> for each id.
+    ///    
+    /// # Examples
+    ///    
+    /// ```no_run
+    /// use steamgriddb_api::client::Client;
+    /// use steamgriddb_api::query_parameters::Platform::*;
+    /// use steamgriddb_api::query_parameters::QueryType::*;
+    /// use steamgriddb_api::query_parameters::GridQueryParameters;    
+    ///
+    /// # async fn example() {
+    /// let mut client = Client::new("my_auth_key");    
+    /// let platform = EpicGameStore;
+    /// let ids = ["Salt", "Turkey"];
+    /// let epic_games_images = client.get_images_for_platform_ids(&platform, &ids, &Grid(None)).await.unwrap();    
+    /// # }
+    /// ```
     pub async fn get_images_for_platform_ids<'a>(
         &self,
         platform: &Platform,
@@ -256,20 +296,46 @@ impl Client {
         Ok(response_to_result_flat(resposse)?)
     }
 
+    /// Fetch information about a game given a game id.
+    ///    
+    /// # Examples
+    ///    
+    /// ```no_run
+    /// use steamgriddb_api::client::Client;
+    ///
+    /// # async fn example() {
+    /// let mut client = Client::new("my_auth_key");    
+    /// let game_info = client.get_game_info_for_id(13136).await.unwrap();    
+    /// assert_eq!(game_info.name, "Celeste");
+    /// # }
+    /// ```
     pub async fn get_game_info_for_id(
         &self,
-        game_id: &str,
+        game_id: usize,
     ) -> Result<Game, Box<dyn std::error::Error>> {
         let url = get_game_by_game_id_url(self.base_url.as_str(), game_id);
         let response = self.make_request::<Game>(url.as_str()).await?;
         Ok(response)
     }
 
+    /// Fetch information about a game given a steam game id.
+    ///    
+    /// # Examples
+    ///    
+    /// ```no_run
+    /// use steamgriddb_api::client::Client;
+    ///
+    /// # async fn example() {
+    /// let mut client = Client::new("my_auth_key");    
+    /// let game_info = client.get_game_by_steam_app_id(361420).await.unwrap();    
+    /// assert_eq!(game_info.name, "Astroneer");
+    /// # }
+    /// ```
     pub async fn get_game_by_steam_app_id(
         &self,
-        steam_app_id: &str,
+        steam_app_id: usize,
     ) -> Result<Game, Box<dyn std::error::Error>> {
-        let url = get_game_by_game_id_url(self.base_url.as_str(), steam_app_id);
+        let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
         let response = self.make_request::<Game>(url.as_str()).await?;
         Ok(response)
     }
@@ -288,10 +354,13 @@ impl Client {
             .await?)
     }
 
+
+    /// Get a SteamStaticUrls that contains the expected urls for the official Steam store images.
     pub fn get_official_steam_images_static(steam_app_id: &str) -> SteamStaticUrls {
         SteamStaticUrls::new(steam_app_id)
     }
 
+    /// Get a SteamStaticUrls that contains the expected urls for the official Steam store images.
     pub fn get_official_steam_images(&self, steam_app_id: &str) -> SteamStaticUrls {
         Self::get_official_steam_images_static(steam_app_id)
     }

@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::query_parameters::Platform;
 
-pub fn get_game_by_game_id_url(base_url: &str, game_id: &str) -> String {
+pub fn get_game_by_game_id_url(base_url: &str, game_id: usize) -> String {
     format!("{}/games/id/{}", base_url, game_id)
 }
 
-pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: &str) -> String {
+pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: usize) -> String {
     format!("{}/games/steam/{}", base_url, steam_app_id)
 }
 
@@ -29,15 +29,15 @@ mod tests {
     #[test]
     fn get_game_by_game_id_url_test() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_game_by_game_id_url(base_url, "13136");
+        let url = get_game_by_game_id_url(base_url, 13136);
         assert_eq!("https://www.steamgriddb.com/api/v2/games/id/13136", url);
     }
 
     #[test]
     fn get_game_by_steam_app_id_url_test() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_game_by_steam_app_id_url(base_url, "13136");
-        assert_eq!("https://www.steamgriddb.com/api/v2/games/steam/13136", url);
+        let url = get_game_by_steam_app_id_url(base_url, 361420);
+        assert_eq!("https://www.steamgriddb.com/api/v2/games/steam/361420", url);
     }
     #[test]
     fn parse_game_response_test() {

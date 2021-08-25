@@ -1,4 +1,4 @@
-use crate::{query_parameters::*};
+use crate::query_parameters::*;
 
 use serde::{Deserialize, Serialize};
 
@@ -91,7 +91,6 @@ pub(crate) type InnerImagesMultipleIdsResponse =
 
 pub(crate) type InnerImagesSingleIdResponse = crate::response::Response<Vec<Image>>;
 
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 /// Author of the image
 ///
@@ -105,14 +104,12 @@ pub struct Author {
     pub avatar: Option<String>,
 }
 
-
-
 #[cfg(test)]
 mod tests {
 
-    use crate::{        
+    use crate::{
         query_parameters::{GridQueryParameters, HeroQueryParameters},
-        response::{response_to_result, response_to_result_flat, SteamGridDbError},        
+        response::{response_to_result, response_to_result_flat, SteamGridDbError},
     };
 
     use super::*;
@@ -219,7 +216,7 @@ mod tests {
         let url = get_images_by_platform_ids_url(
             base_url,
             &Platform::EpicGameStore,
-            &["13136", "14065"],
+            &["Salt", "14065"],
             &Grid(Some(config)),
         );
         assert_eq!(
