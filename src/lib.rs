@@ -1,13 +1,7 @@
-pub mod author;
 pub mod client;
-pub mod dimensions;
 pub mod games;
 pub mod images;
-pub mod platforms;
-pub mod queries;
 pub mod query_parameters;
 pub mod response;
 pub mod search;
-pub mod shared_settings;
-pub mod styles;
 pub mod steam_static;

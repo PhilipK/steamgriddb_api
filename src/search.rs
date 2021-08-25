@@ -9,11 +9,11 @@ pub(crate) type InnerSearchResult = crate::response::Response<Vec<SearchResult>>
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SearchResult {
-    name: String,
-    release_date: Option<u32>,
-    verified:bool,    
-    id: u32,
-    types: Vec<String>,
+    pub name: String,
+    pub release_date: Option<usize>,
+    pub verified:bool,    
+    pub id: usize,
+    pub types: Vec<String>,
 }
 
 #[cfg(test)]

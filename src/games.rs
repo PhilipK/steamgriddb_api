@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::platforms::Platform;
+use crate::query_parameters::Platform;
 
 pub fn get_game_by_game_id_url(base_url: &str, game_id: &str) -> String {
     format!("{}/games/id/{}", base_url, game_id)
@@ -12,10 +12,10 @@ pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: &str) -> Strin
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Game {
-    pub id: u32,
+    pub id: usize,
     pub name: String,
     pub types: Vec<Platform>,
-    pub release_date: Option<u32>,
+    pub release_date: Option<usize>,
     pub verified: bool,
 }
 

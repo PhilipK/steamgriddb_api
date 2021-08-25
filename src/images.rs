@@ -1,11 +1,6 @@
-use crate::{
-    platforms::Platform, queries::ToQuerys, query_parameters::QueryType, shared_settings::MimeType,
-    styles::Style,
-};
+use crate::{query_parameters::*};
 
 use serde::{Deserialize, Serialize};
-
-use crate::author::Author;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Image {
@@ -28,12 +23,17 @@ pub struct Image {
     pub author: Author,
 }
 
-pub fn get_images_by_game_id_url(base_url: &str, game_id: &str, config: &QueryType) -> String {
+pub fn get_images_by_game_id_url(base_url: &str, game_id: usize, config: &QueryType) -> String {
     get_images_by_game_ids_url(base_url, &[game_id], config)
 }
 
-pub fn get_images_by_game_ids_url(base_url: &str, game_ids: &[&str], config: &QueryType) -> String {
-    let game_ids_str = game_ids.join(",");
+pub fn get_images_by_game_ids_url(
+    base_url: &str,
+    game_ids: &[usize],
+    config: &QueryType,
+) -> String {
+    let game_id_strings: Vec<String> = game_ids.iter().map(|id| format!("{}", id)).collect();
+    let game_ids_str = game_id_strings.join(",");
     let query_type_str = match config {
         QueryType::Grid(_) => "grids",
         QueryType::Hero(_) => "heroes",
@@ -52,10 +52,10 @@ pub fn get_images_by_game_ids_url(base_url: &str, game_ids: &[&str], config: &Qu
 pub fn get_images_by_platform_id_url(
     base_url: &str,
     platform: &Platform,
-    game_ids: &str,
+    game_id: &str,
     grid_config: &QueryType,
 ) -> String {
-    get_images_by_platform_ids_url(base_url, platform, &[game_ids], grid_config)
+    get_images_by_platform_ids_url(base_url, platform, &[game_id], grid_config)
 }
 
 pub fn get_images_by_platform_ids_url(
@@ -91,10 +91,29 @@ pub(crate) type InnerImagesMultipleIdsResponse =
 
 pub(crate) type InnerImagesSingleIdResponse = crate::response::Response<Vec<Image>>;
 
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+/// Author of the image
+///
+/// Constains the basic information about the user that has uploaded an image.
+pub struct Author {
+    /// Name of the author
+    pub name: String,
+    /// Steam64 id of the user
+    pub steam64: String,
+    /// Optional url to the users avatar
+    pub avatar: Option<String>,
+}
+
+
+
 #[cfg(test)]
 mod tests {
 
-    use crate::{dimensions::{GridDimentions, HeroDimentions}, query_parameters::{GridQueryParameters, HeroQueryParameters}, response::{SteamGridDbError, response_to_result, response_to_result_flat}, shared_settings::{AnimtionType, Humor, Nsfw}};
+    use crate::{        
+        query_parameters::{GridQueryParameters, HeroQueryParameters},
+        response::{response_to_result, response_to_result_flat, SteamGridDbError},        
+    };
 
     use super::*;
 
@@ -103,14 +122,14 @@ mod tests {
     #[test]
     fn get_grids_by_game_ids_url_test_single_no_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_images_by_game_ids_url(base_url, &["13136"], &Grid(None));
+        let url = get_images_by_game_ids_url(base_url, &[13136], &Grid(None));
         assert_eq!("https://www.steamgriddb.com/api/v2/grids/game/13136", url);
     }
 
     #[test]
     fn get_grids_by_game_ids_url_test_multiple_no_config() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(None));
+        let url = get_images_by_game_ids_url(base_url, &[13136, 14065], &Grid(None));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065",
             url
@@ -122,7 +141,7 @@ mod tests {
         let base_url = "https://www.steamgriddb.com/api/v2";
         let mut config = GridQueryParameters::default();
         config.styles = Some(&[Style::Alternate, Style::Blurred]);
-        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
+        let url = get_images_by_game_ids_url(base_url, &[13136, 14065], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred",
             url
@@ -135,8 +154,8 @@ mod tests {
         let mut config = GridQueryParameters::default();
         config.styles = Some(&[Style::Alternate, Style::Blurred]);
         let grid_config = Grid(Some(config));
-        let actual = get_images_by_game_id_url(base_url, "13136", &grid_config);
-        let expected = get_images_by_game_ids_url(base_url, &["13136"], &grid_config);
+        let actual = get_images_by_game_id_url(base_url, 13136, &grid_config);
+        let expected = get_images_by_game_ids_url(base_url, &[13136], &grid_config);
         assert_eq!(actual, expected);
     }
 
@@ -146,7 +165,7 @@ mod tests {
         let mut config = GridQueryParameters::default();
         config.styles = Some(&[Style::Alternate, Style::Blurred]);
         config.types = Some(&[AnimtionType::Animated, AnimtionType::Static]);
-        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
+        let url = get_images_by_game_ids_url(base_url, &[13136, 14065], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred&types=animated,static",
             url
@@ -163,7 +182,7 @@ mod tests {
         config.nsfw = Some(&Nsfw::False);
         config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
         config.dimentions = Some(&[GridDimentions::D1024x1024, GridDimentions::D920x430]);
-        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Grid(Some(config)));
+        let url = get_images_by_game_ids_url(base_url, &[13136, 14065], &Grid(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/grids/game/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
@@ -180,7 +199,7 @@ mod tests {
         config.nsfw = Some(&Nsfw::False);
         config.mimes = Some(&[MimeType::Jpeg, MimeType::Png]);
         config.dimentions = Some(&[HeroDimentions::D1600x650, HeroDimentions::D3840x1240]);
-        let url = get_images_by_game_ids_url(base_url, &["13136", "14065"], &Hero(Some(config)));
+        let url = get_images_by_game_ids_url(base_url, &[13136, 14065], &Hero(Some(config)));
         assert_eq!(
             "https://www.steamgriddb.com/api/v2/heroes/game/13136,14065?styles=alternate,blurred&dimensions=1600x650,3840x1240&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
