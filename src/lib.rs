@@ -10,3 +10,4 @@ pub mod response;
 pub mod search;
 pub mod shared_settings;
 pub mod styles;
+pub mod steam_static;

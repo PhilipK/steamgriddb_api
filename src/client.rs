@@ -1,17 +1,10 @@
 use serde::de::DeserializeOwned;
 
-use crate::{
-    games::{get_game_by_game_id_url, Game},
-    images::{
+use crate::{games::{get_game_by_game_id_url, Game}, images::{
         get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
         get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
         InnerImagesSingleIdResponse,
-    },
-    platforms::Platform,
-    query_parameters::QueryType,
-    response::{response_to_result, response_to_result_flat, SteamGridDbResult},
-    search::{get_search_url, InnerSearchResult, SearchResult},
-};
+    }, platforms::Platform, query_parameters::QueryType, response::{response_to_result, response_to_result_flat, SteamGridDbResult}, search::{get_search_url, InnerSearchResult, SearchResult}, steam_static::SteamStaticUrls};
 
 pub struct Client {
     auth_key: String,
@@ -136,5 +129,13 @@ impl Client {
             .await?
             .json::<T>()
             .await?)
+    }
+
+    pub fn get_official_steam_images_static(steam_app_id:&str) -> SteamStaticUrls{
+        SteamStaticUrls::new(steam_app_id)
+    }
+
+    pub fn get_official_steam_images(&self, steam_app_id:&str) -> SteamStaticUrls{
+        Self::get_official_steam_images_static(steam_app_id)
     }
 }
