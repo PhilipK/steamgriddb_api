@@ -1,7 +1,7 @@
 use serde::de::DeserializeOwned;
 
 use crate::{
-    games::{get_game_by_game_id_url, get_game_by_steam_app_id_url, Game},
+    games::{get_gameinfo_by_game_id_url, get_game_by_steam_app_id_url, GameInfo},
     images::{
         get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
         get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
@@ -312,9 +312,9 @@ impl Client {
     pub async fn get_game_info_for_id(
         &self,
         game_id: usize,
-    ) -> Result<Game, Box<dyn std::error::Error>> {
-        let url = get_game_by_game_id_url(self.base_url.as_str(), game_id);
-        let response = self.make_request::<Game>(url.as_str()).await?;
+    ) -> Result<GameInfo, Box<dyn std::error::Error>> {
+        let url = get_gameinfo_by_game_id_url(self.base_url.as_str(), game_id);
+        let response = self.make_request::<GameInfo>(url.as_str()).await?;
         Ok(response)
     }
 
@@ -334,9 +334,9 @@ impl Client {
     pub async fn get_game_by_steam_app_id(
         &self,
         steam_app_id: usize,
-    ) -> Result<Game, Box<dyn std::error::Error>> {
+    ) -> Result<GameInfo, Box<dyn std::error::Error>> {
         let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
-        let response = self.make_request::<Game>(url.as_str()).await?;
+        let response = self.make_request::<GameInfo>(url.as_str()).await?;
         Ok(response)
     }
 
@@ -353,7 +353,6 @@ impl Client {
             .json::<T>()
             .await?)
     }
-
 
     /// Get a SteamStaticUrls that contains the expected urls for the official Steam store images.
     pub fn get_official_steam_images_static(steam_app_id: &str) -> SteamStaticUrls {

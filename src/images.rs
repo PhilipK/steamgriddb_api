@@ -2,24 +2,56 @@ use crate::query_parameters::*;
 
 use serde::{Deserialize, Serialize};
 
+/// This image struct contains relevant image information for an image.
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Image {
+    /// The steamgriddb id of the image.
     pub id: u32,
+    /// The name of the image.
     pub score: u32,
+    /// The animation style of the image.
     pub style: Style,
+    
+    /// The width of the image
     pub width: u32,
+    
+    /// The height of the image.
     pub height: u32,
+
+    /// Is this image Not Safe For Work?
     pub nsfw: bool,
+
+    /// Is this image humorous? 
     pub humor: bool,
+
+    /// A list of possible notes for the image
     pub notes: Option<String>,
+
+    /// The mimetype of the image
     pub mime: MimeType,
+
+    /// The language of the image
     pub language: String,
+
+    /// The url of the image
     pub url: String,
+
+    /// The url of the thumbnail
     pub thumb: String,
+
+    /// Is this image locked
     pub lock: bool,
+
+    /// Is this game epilepsy triggering?
     pub epilepsy: bool,
+
+    // The amount of upvotes the image has
     pub upvotes: u32,
+
+    // The amount of downvotes the image has
     pub downvotes: u32,
+
+    // The author of the image
     pub author: Author,
 }
 
@@ -220,7 +252,7 @@ mod tests {
             &Grid(Some(config)),
         );
         assert_eq!(
-            "https://www.steamgriddb.com/api/v2/grids/egs/13136,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
+            "https://www.steamgriddb.com/api/v2/grids/egs/Salt,14065?styles=alternate,blurred&dimensions=1024x1024,920x430&mimes=image/jpeg,image/png&types=animated,static&nsfw=false&humor=any",
             url
         );
     }

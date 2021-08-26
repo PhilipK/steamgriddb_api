@@ -2,34 +2,44 @@ use serde::{Deserialize, Serialize};
 
 use crate::query_parameters::Platform;
 
-pub fn get_game_by_game_id_url(base_url: &str, game_id: usize) -> String {
+/// Get the URL to get info about a game
+pub fn get_gameinfo_by_game_id_url(base_url: &str, game_id: usize) -> String {
     format!("{}/games/id/{}", base_url, game_id)
 }
 
+/// Get the URL to get info about a game, given a steam app id
 pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: usize) -> String {
     format!("{}/games/steam/{}", base_url, steam_app_id)
 }
 
+/// Information about a game
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Game {
+pub struct GameInfo {
+    /// The steamgriddb id for the game
     pub id: usize,
+    /// The name of the game
     pub name: String,
+    /// The platforms known for this game
     pub types: Vec<Platform>,
+    /// The release date for this game
     pub release_date: Option<usize>,
+    /// If this game has been verified
     pub verified: bool,
 }
 
-pub type GameResponse = crate::response::Response<Game>;
+
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
+    
+    pub(crate) type GameResponse = crate::response::Response<GameInfo>;
 
     #[test]
     fn get_game_by_game_id_url_test() {
         let base_url = "https://www.steamgriddb.com/api/v2";
-        let url = get_game_by_game_id_url(base_url, 13136);
+        let url = get_gameinfo_by_game_id_url(base_url, 13136);
         assert_eq!("https://www.steamgriddb.com/api/v2/games/id/13136", url);
     }
 
