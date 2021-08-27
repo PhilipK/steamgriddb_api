@@ -1,7 +1,7 @@
 use std::{error, fmt};
 
 use serde::{Deserialize, Serialize};
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Errors from the server
 pub struct SteamGridDbError {
     /// The error status code
@@ -21,7 +21,7 @@ impl fmt::Display for SteamGridDbError {
 
 impl error::Error for SteamGridDbError {}
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Steamgriddb response type
 pub struct Response<T> {
     /// Was the request a success?

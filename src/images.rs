@@ -3,7 +3,7 @@ use crate::query_parameters::*;
 use serde::{Deserialize, Serialize};
 
 /// This image struct contains relevant image information for an image.
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Image {
     /// The steamgriddb id of the image.
     pub id: u32,
@@ -135,7 +135,7 @@ pub(crate) type InnerImagesMultipleIdsResponse =
 
 pub(crate) type InnerImagesSingleIdResponse = crate::response::Response<Vec<Image>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Author of the image
 ///
 /// Constains the basic information about the user that has uploaded an image.

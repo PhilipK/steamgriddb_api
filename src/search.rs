@@ -8,7 +8,7 @@ pub fn get_search_url(base_url: &str, qeury: &str) -> String {
 
 pub(crate) type InnerSearchResult = crate::response::Response<Vec<SearchResult>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// A search result from the search API
 pub struct SearchResult {
     /// The name of the game

@@ -1,7 +1,7 @@
 use serde::de::DeserializeOwned;
 
 use crate::{
-    games::{get_gameinfo_by_game_id_url, get_game_by_steam_app_id_url, GameInfo},
+    games::{get_game_by_steam_app_id_url, get_gameinfo_by_game_id_url, GameInfo},
     images::{
         get_images_by_game_id_url, get_images_by_game_ids_url, get_images_by_platform_id_url,
         get_images_by_platform_ids_url, Image, InnerImagesMultipleIdsResponse,
@@ -27,7 +27,7 @@ use crate::{
 /// async fn example() -> Result<(), Box<dyn std::error::Error>> {
 ///     let client = Client::new("my_auth_key");
 ///     let games = client.search("Celeste").await?;
-///     let first_game = games.iter().next().unwrap();
+///     let first_game = games.iter().next().ok_or("No games found")?;
 ///     assert_eq!("Celeste", first_game.name);
 ///     let images = client.get_images_for_id(first_game.id, &Grid(None)).await?;
 ///     Ok(())
@@ -144,10 +144,11 @@ impl Client {
     /// use steamgriddb_api::client::Client;
     /// use steamgriddb_api::query_parameters::QueryType::*;
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");
-    /// let grid_images = client.get_images_for_id(7993, &Grid(None)).await.unwrap();
-    /// let hero_images = client.get_images_for_id(7993, &Hero(None)).await.unwrap();
+    /// let grid_images = client.get_images_for_id(7993, &Grid(None)).await?;
+    /// let hero_images = client.get_images_for_id(7993, &Hero(None)).await?;
+    /// # Ok(())
     /// # }
     /// ```
     ///
@@ -159,11 +160,12 @@ impl Client {
     /// use steamgriddb_api::query_parameters::QueryType::*;
     /// use steamgriddb_api::query_parameters::GridQueryParameters;    
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");
     /// let mut parameters = GridQueryParameters::default();
     /// parameters.dimentions = Some(&[D600x900,D512x512]);
-    /// let filtered_grid_images = client.get_images_for_id(7993, &Grid(Some(parameters))).await.unwrap();    
+    /// let filtered_grid_images = client.get_images_for_id(7993, &Grid(Some(parameters))).await?;    
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn get_images_for_id(
@@ -189,11 +191,12 @@ impl Client {
     /// use steamgriddb_api::client::Client;
     /// use steamgriddb_api::query_parameters::QueryType::*;
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");
     /// let ids = [7993,5153400];
-    /// let grid_images = client.get_images_for_ids(&ids, &Grid(None)).await.unwrap();
+    /// let grid_images = client.get_images_for_ids(&ids, &Grid(None)).await?;
     /// assert_eq!(ids.len(), grid_images.len());
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn get_images_for_ids(
@@ -219,11 +222,12 @@ impl Client {
     /// use steamgriddb_api::client::Client;
     /// use steamgriddb_api::query_parameters::QueryType::*;
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");    
-    /// let search_results = client.search("Celeste").await.unwrap();
-    /// let first_result = search_results.iter().next().unwrap();
+    /// let search_results = client.search("Celeste").await?;
+    /// let first_result = search_results.iter().next().ok_or("None found")?;
     /// assert_eq!(first_result.name, "Celeste");
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn search(
@@ -245,10 +249,11 @@ impl Client {
     /// use steamgriddb_api::query_parameters::QueryType::*;
     /// use steamgriddb_api::query_parameters::GridQueryParameters;    
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");    
     /// let platform = EpicGameStore;
-    /// let epic_games_images = client.get_images_for_platform_id(&platform, "Salt", &Grid(None)).await.unwrap();    
+    /// let epic_games_images = client.get_images_for_platform_id(&platform, "Salt", &Grid(None)).await?;    
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn get_images_for_platform_id(
@@ -276,11 +281,12 @@ impl Client {
     /// use steamgriddb_api::query_parameters::QueryType::*;
     /// use steamgriddb_api::query_parameters::GridQueryParameters;    
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>>{
     /// let mut client = Client::new("my_auth_key");    
     /// let platform = EpicGameStore;
     /// let ids = ["Salt", "Turkey"];
-    /// let epic_games_images = client.get_images_for_platform_ids(&platform, &ids, &Grid(None)).await.unwrap();    
+    /// let epic_games_images = client.get_images_for_platform_ids(&platform, &ids, &Grid(None)).await?;  
+    /// # Ok(())  
     /// # }
     /// ```
     pub async fn get_images_for_platform_ids(
@@ -303,10 +309,11 @@ impl Client {
     /// ```no_run
     /// use steamgriddb_api::client::Client;
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");    
-    /// let game_info = client.get_game_info_for_id(13136).await.unwrap();    
+    /// let game_info = client.get_game_info_for_id(13136).await?;    
     /// assert_eq!(game_info.name, "Celeste");
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn get_game_info_for_id(
@@ -325,10 +332,11 @@ impl Client {
     /// ```no_run
     /// use steamgriddb_api::client::Client;
     ///
-    /// # async fn example() {
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let mut client = Client::new("my_auth_key");    
-    /// let game_info = client.get_game_by_steam_app_id(361420).await.unwrap();    
+    /// let game_info = client.get_game_by_steam_app_id(361420).await?;    
     /// assert_eq!(game_info.name, "Astroneer");
+    /// # Ok(())
     /// # }
     /// ```
     pub async fn get_game_by_steam_app_id(

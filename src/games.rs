@@ -13,7 +13,7 @@ pub fn get_game_by_steam_app_id_url(base_url: &str, steam_app_id: usize) -> Stri
 }
 
 /// Information about a game
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct GameInfo {
     /// The steamgriddb id for the game
     pub id: usize,
@@ -27,13 +27,11 @@ pub struct GameInfo {
     pub verified: bool,
 }
 
-
-
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    
+
     pub(crate) type GameResponse = crate::response::Response<GameInfo>;
 
     #[test]

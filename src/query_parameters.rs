@@ -141,7 +141,6 @@ impl ToQuerys for IconQueryParameters<'_> {
     }
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 /// Grid dimentions
 pub enum GridDimentions {
@@ -168,7 +167,6 @@ pub enum GridDimentions {
     D1024x1024,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 /// Hero dimentions
 pub enum HeroDimentions {
@@ -182,7 +180,6 @@ pub enum HeroDimentions {
     /// 1600x650
     D1600x650,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 /// Icon dimentions
@@ -273,7 +270,6 @@ pub enum IconDimensions {
     D1024x1024,
 }
 
-
 pub(crate) trait ToQuerys {
     fn to_querys(&self) -> String;
 }
@@ -315,14 +311,20 @@ where
 {
     match items {
         Some(items) if !items.is_empty() => {
-            let name = items.first().unwrap().to_query_value().name;
-            let value = items
-                .iter()
-                .map(ToQueryValue::to_query_value)
-                .map(|x| x.value)
-                .collect::<Vec<String>>()
-                .join(",");
-            Some(format!("{}={}", name, value))
+            let first_op = items.first();
+            match first_op {
+                Some(first) => {
+                    let name = first.to_query_value().name;
+                    let value = items
+                        .iter()
+                        .map(ToQueryValue::to_query_value)
+                        .map(|x| x.value)
+                        .collect::<Vec<String>>()
+                        .join(",");
+                    Some(format!("{}={}", name, value))
+                }
+                None => None,
+            }
         }
         _ => None,
     }
@@ -399,10 +401,9 @@ impl ToQueryValue for IconDimensions {
     }
 }
 
-
-#[derive(Serialize, Deserialize, Debug,Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Game platforms/stores
-pub enum Platform{
+pub enum Platform {
     #[serde(rename = "steam")]
     /// steam
     Steam,
@@ -420,20 +421,20 @@ pub enum Platform{
     Uplay,
     #[serde(rename = "flashpoint")]
     /// flashpoint
-    Flashpoint
+    Flashpoint,
 }
-
 
 impl ToString for Platform {
     fn to_string(&self) -> String {
-          match self {
+        match self {
             Platform::Steam => "steam",
             Platform::Origin => "origin",
             Platform::EpicGameStore => "egs",
             Platform::BattleNet => "bnet",
             Platform::Uplay => "uplay",
             Platform::Flashpoint => "flashpoint",
-        }.to_string()        
+        }
+        .to_string()
     }
 }
 
@@ -504,9 +505,7 @@ impl ToQueryValue for AnimtionType {
     }
 }
 
-
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Mime types
 pub enum MimeType {
     #[serde(rename = "image/png")]
@@ -520,7 +519,7 @@ pub enum MimeType {
     Webp,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Mime types for logos
 pub enum MimeTypeLogo {
     #[serde(rename = "image/png")]
@@ -538,7 +537,7 @@ pub enum ImageType {
     Animated,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Is the image Not Safe For Work
 pub enum Nsfw {
     True,
@@ -546,8 +545,8 @@ pub enum Nsfw {
     Any,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-/// Is the image houmerous 
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+/// Is the image houmerous
 pub enum Humor {
     True,
     False,
@@ -568,17 +567,16 @@ impl ToQueryValue for Humor {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Image animation types
 pub enum AnimtionType {
     Static,
     Animated,
 }
 
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Image style
-pub enum Style{
+pub enum Style {
     #[serde(rename = "alternate")]
     /// alternate
     Alternate,
@@ -612,8 +610,7 @@ impl ToQueryValue for Style {
     }
 }
 
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StyleLogo {
     #[serde(rename = "official")]
     /// official
@@ -627,17 +624,16 @@ pub enum StyleLogo {
     #[serde(rename = "custom")]
     /// custom
     Custom,
-    
 }
 
 impl ToQueryValue for StyleLogo {
     fn to_query_value(&self) -> QeuryValue {
         QeuryValue {
             name: "styles".to_string(),
-            value: match self {                
-                StyleLogo::Official => "official",                 
-                StyleLogo::White => "white",                 
-                StyleLogo::Black => "black",                
+            value: match self {
+                StyleLogo::Official => "official",
+                StyleLogo::White => "white",
+                StyleLogo::Black => "black",
                 StyleLogo::Custom => "custom",
             }
             .to_string(),
