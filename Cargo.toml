@@ -6,8 +6,8 @@ description = "Rust client for steamgriddb.com API"
 repository = "https://github.com/PhilipK/steamgriddb_api"
 documentation = "https://docs.rs/steamgriddb_api/0.1.1/steamgriddb_api/"
 keywords = ["api", "steam", "images"]
-categories = ["api"]
-version = "0.1.2"
+categories = ["api-bindings"]
+version = "0.1.3"
 edition = "2018"
 readme = "crates-io.md"
 
