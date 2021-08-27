@@ -7,8 +7,8 @@
 //! The easiest way to get started is using the Client.
 //! 
 //! ```no_run
-//! use steamgriddb_api::client::Client;
-//! use steamgriddb_api::query_parameters::QueryType::Grid;
+//! use steamgriddb_api::Client;
+//! use steamgriddb_api::QueryType::Grid;
 //! async fn example() -> Result<(), Box<dyn std::error::Error>> {
 //!     let client = Client::new("my_auth_key");
 //!     let games = client.search("Celeste").await?;
@@ -30,3 +30,5 @@ pub mod response;
 pub mod search;
 pub mod steam_static;
 
+pub use client::Client;
+pub use query_parameters::QueryType;
