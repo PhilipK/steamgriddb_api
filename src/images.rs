@@ -39,26 +39,28 @@ pub struct Image {
     /// The url of the thumbnail
     pub thumb: String,
 
-    /// Is this image locked
+    /// Is this image locked?
     pub lock: bool,
 
     /// Is this game epilepsy triggering?
     pub epilepsy: bool,
 
-    // The amount of upvotes the image has
+    /// The amount of upvotes the image has
     pub upvotes: u32,
 
-    // The amount of downvotes the image has
+    /// The amount of downvotes the image has
     pub downvotes: u32,
 
-    // The author of the image
+    /// The author of the image
     pub author: Author,
 }
 
+/// Get an URL to request images for one game given its stemagriddb id.
 pub fn get_images_by_game_id_url(base_url: &str, game_id: usize, config: &QueryType) -> String {
     get_images_by_game_ids_url(base_url, &[game_id], config)
 }
 
+/// Get an URL to request an image for each of the given stemagriddb game ids.
 pub fn get_images_by_game_ids_url(
     base_url: &str,
     game_ids: &[usize],
@@ -81,6 +83,8 @@ pub fn get_images_by_game_ids_url(
     }
 }
 
+
+/// Get an URL to request an images for a game given a platform and a platform specific id.
 pub fn get_images_by_platform_id_url(
     base_url: &str,
     platform: &Platform,
@@ -90,6 +94,14 @@ pub fn get_images_by_platform_id_url(
     get_images_by_platform_ids_url(base_url, platform, &[game_id], grid_config)
 }
 
+/// Get an URL to request an image for each of the given platform ids.
+///
+/// ### Examples
+/// ```
+/// use steamgriddb_api::images::*;
+/// use steamgriddb_api::query_parameters::*;
+/// let url = get_images_by_platform_ids_url("https://www.steamgriddb.com/api/v2", &Platform::Steam, &["107500", "107510"], &QueryType::Grid(None));
+/// ```
 pub fn get_images_by_platform_ids_url(
     base_url: &str,
     platform: &Platform,

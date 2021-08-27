@@ -17,7 +17,7 @@ use crate::{
 ///
 /// The client calls the API using the [reqwest](https://crates.io/crates/reqwest) crate and parses the result using the [serde](https://crates.io/crates/serde) crate.
 ///
-/// # Examples
+/// ### Examples
 ///
 /// Searching for a game and getting images for it:
 /// ```no_run
@@ -42,7 +42,7 @@ pub struct Client {
 impl Client {
     /// Creates a new client with the given auth key.
     ///
-    /// # Examples
+    /// ### Examples
     /// ```
     /// use steamgriddb_api::client::Client;
     /// # fn main() {
@@ -67,7 +67,7 @@ impl Client {
     ///
     /// The default url is <https://www.steamgriddb.com/api/v2>
     ///
-    /// # Examples
+    /// ### Examples
     ///
     /// ```
     /// use steamgriddb_api::client::Client;
@@ -88,7 +88,7 @@ impl Client {
     ///
     /// The default url is <https://www.steamgriddb.com/api/v2>
     ///
-    /// # Examples
+    /// ### Examples
     ///
     /// ```
     /// use steamgriddb_api::client::Client;
@@ -103,7 +103,7 @@ impl Client {
 
     /// Gets the auth key for the client.
     ///
-    /// # Examples
+    /// ### Examples
     ///
     /// ```
     /// use steamgriddb_api::client::Client;
@@ -118,7 +118,7 @@ impl Client {
 
     /// Sets the auth key for the client.
     ///
-    /// # Examples
+    /// ### Examples
     ///
     /// ```
     /// use steamgriddb_api::client::Client;
@@ -137,7 +137,7 @@ impl Client {
 
     /// Fetches images given a game id and a query type.
     ///    
-    /// # Examples
+    /// ### Examples
     /// The Query type decides which kind of images to fetch.
     ///
     /// ```no_run
@@ -182,7 +182,7 @@ impl Client {
     ///
     /// The resulting list will be a SteamGridDbResult<Image> for each id.
     ///            
-    /// # Examples
+    /// ### Examples
     /// One image will be fetched for each id.
     ///
     /// ```no_run
@@ -213,7 +213,7 @@ impl Client {
     ///     
     /// The search query will be url encoded, so that it will be safe to use.           
     ///     
-    /// # Examples
+    /// ### Examples
     ///
     /// ```no_run
     /// use steamgriddb_api::client::Client;
@@ -237,7 +237,7 @@ impl Client {
 
     /// Fetches images given a platform type, a platform specific game id and a query type.
     ///    
-    /// # Examples
+    /// ### Examples
     ///    
     /// ```no_run
     /// use steamgriddb_api::client::Client;
@@ -268,7 +268,7 @@ impl Client {
     ///    
     /// The resulting list will be a SteamGridDbResult<Image> for each id.
     ///    
-    /// # Examples
+    /// ### Examples
     ///    
     /// ```no_run
     /// use steamgriddb_api::client::Client;
@@ -298,7 +298,7 @@ impl Client {
 
     /// Fetch information about a game given a game id.
     ///    
-    /// # Examples
+    /// ### Examples
     ///    
     /// ```no_run
     /// use steamgriddb_api::client::Client;
@@ -320,7 +320,7 @@ impl Client {
 
     /// Fetch information about a game given a steam game id.
     ///    
-    /// # Examples
+    /// ### Examples
     ///    
     /// ```no_run
     /// use steamgriddb_api::client::Client;
