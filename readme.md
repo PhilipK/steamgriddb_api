@@ -7,12 +7,12 @@ This project is a wrapper for the steamgriddb api, written in Rust.
 The easiest way to get started is using the Client.
 
 ```rust
-use steamgriddb_api::client::Client;
+use steamgriddb_api::Client;
 use steamgriddb_api::query_parameters::QueryType::Grid;
 async fn example() -> Result<(), Box<dyn std::error::Error>> {
     let client = Client::new("my_auth_key");
     let games = client.search("Celeste").await?;
-    let first_game = games.iter().next()?;
+    let first_game = games.iter().next().ok_or("No games found")?;
     assert_eq!("Celeste", first_game.name);
     let images = client.get_images_for_id(first_game.id, &Grid(None)).await?;
     Ok(())
