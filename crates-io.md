@@ -21,12 +21,12 @@ async fn example() -> Result<(), Box<dyn std::error::Error>> {
 
 The client calls the API using the [reqwest](https://crates.io/crates/reqwest) crate and parses the results using the [serde](https://crates.io/crates/serde) crate.
 
+It is possible to use library without the client, if you want to use a different way of calling the API.
 ```rust
 use steamgriddb_api::images::*;
 use steamgriddb_api::query_parameters::*;
 let url = get_images_by_platform_ids_url("https://www.steamgriddb.com/api/v2", &Platform::Steam, &["107500", "107510"], &QueryType::Grid(None));
 ```
-
 
 ### Use an Auth Key
 

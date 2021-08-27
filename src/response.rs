@@ -2,8 +2,11 @@ use std::{error, fmt};
 
 use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug)]
+/// Errors from the server
 pub struct SteamGridDbError {
+    /// The error status code
     pub status: Option<u32>,
+    /// The error messages
     pub errors: Option<Vec<String>>,
 }
 impl fmt::Display for SteamGridDbError {
@@ -19,15 +22,21 @@ impl fmt::Display for SteamGridDbError {
 impl error::Error for SteamGridDbError {}
 
 #[derive(Serialize, Deserialize, Debug)]
+/// Steamgriddb response type
 pub struct Response<T> {
+    /// Was the request a success?
     pub success: bool,
+    /// The response data
     pub data: Option<T>,
+    /// The status code of the response
     pub status: Option<u32>,
+    /// Any errors that occurred
     pub errors: Option<Vec<String>>,
 }
 
 pub type SteamGridDbResult<T> = std::result::Result<T, SteamGridDbError>;
 
+/// Converts the reponse to a result, that is easier to work with
 pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T>> {
     if !inner.success {
         std::result::Result::Err(SteamGridDbError {
@@ -45,6 +54,9 @@ pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T
     }
 }
 
+/// Converts the reponse to a result, that is easier to work with.
+/// This will also return a single list of resutls instead of a list of lists 
+/// (since there are only one element in the list anyways)
 pub fn response_to_result_flat<T>(
     inner: Response<Vec<Response<Vec<T>>>>,
 ) -> SteamGridDbResult<Vec<SteamGridDbResult<T>>>

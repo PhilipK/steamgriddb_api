@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+/// Get the url to search for the given query
 pub fn get_search_url(base_url: &str, qeury: &str) -> String {
     use urlencoding::encode;
     format!("{}/search/autocomplete/{}", base_url, encode(qeury))
@@ -8,11 +9,17 @@ pub fn get_search_url(base_url: &str, qeury: &str) -> String {
 pub(crate) type InnerSearchResult = crate::response::Response<Vec<SearchResult>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+/// A search result from the search API
 pub struct SearchResult {
+    /// The name of the game
     pub name: String,
+    /// The release date of the game
     pub release_date: Option<usize>,
+    /// Is this game verified?
     pub verified:bool,    
+    /// The id of the game
     pub id: usize,
+    /// The platform types of this game
     pub types: Vec<String>,
 }
 
