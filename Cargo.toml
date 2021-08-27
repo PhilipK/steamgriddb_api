@@ -2,7 +2,7 @@
 name = "steamgriddb_api"
 authors = ["Philip Kristoffersen <philipkristoffersen@gmail.com>"]
 license = "MIT OR Apache-2.0"
-description = "A Rust client for steamgriddb.com API"
+description = "Rust client for steamgriddb.com API"
 version = "0.1.0"
 edition = "2018"
 readme = "crates-io.md"
@@ -11,7 +11,7 @@ readme = "crates-io.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-urlencoding = "*"
-serde = { version = "*", features = ["derive"] }
-serde_json = "*"
-reqwest = { version = "*", features = ["json"] }
+urlencoding = "2.1.*"
+serde = { version = "1.0.*", features = ["derive"] }
+serde_json = "1.0.*"
+reqwest = { version = "0.11.*", features = ["json"] }
