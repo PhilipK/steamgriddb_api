@@ -3,7 +3,7 @@ name = "steamgriddb_api"
 authors = ["Philip Kristoffersen <philipkristoffersen@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Rust client for steamgriddb.com API"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 readme = "crates-io.md"
 
