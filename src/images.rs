@@ -119,7 +119,7 @@ pub fn get_images_by_platform_ids_url(
         "{}/{}/{}/{}",
         base_url,
         query_type_str,
-        <&Platform as Into<String>>::into(platform),
+        platform.to_string(),
         game_ids_str
     );
     let query_string = config.to_querys();

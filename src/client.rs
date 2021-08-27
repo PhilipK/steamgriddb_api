@@ -74,7 +74,7 @@ impl Client {
     /// # fn main() {
     /// let mut client = Client::new("my_auth_key");
     /// client.set_base_url("https://localhost:8080/api/v2");
-    /// assert_eq!("https://localhost:8080/api/v2", client.get_base_url());
+    /// assert_eq!("https://localhost:8080/api/v2", client.base_url());
     /// # }
     /// ```
     pub fn set_base_url<S>(&mut self, base_url: S)
@@ -94,10 +94,10 @@ impl Client {
     /// use steamgriddb_api::client::Client;
     /// # fn main() {
     /// let mut client = Client::new("my_auth_key");    
-    /// assert_eq!("https://www.steamgriddb.com/api/v2", client.get_base_url());
+    /// assert_eq!("https://www.steamgriddb.com/api/v2", client.base_url());
     /// # }
     /// ```
-    pub fn get_base_url<'a>(&'a self) -> &'a str {
+    pub fn base_url(&'_ self) -> &'_ str {
         self.base_url.as_str()
     }
 
@@ -112,7 +112,7 @@ impl Client {
     /// assert_eq!("my_auth_key", client.get_auth_key());
     /// # }
     /// ```
-    pub fn get_auth_key<'a>(&'a self) -> &'a str {
+    pub fn get_auth_key(&self) -> &'_ str {
         self.auth_key.as_str()
     }
 
@@ -166,10 +166,10 @@ impl Client {
     /// let filtered_grid_images = client.get_images_for_id(7993, &Grid(Some(parameters))).await.unwrap();    
     /// # }
     /// ```
-    pub async fn get_images_for_id<'a>(
+    pub async fn get_images_for_id(
         &self,
         game_id: usize,
-        query: &QueryType<'a>,
+        query: &QueryType<'_>,
     ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
         let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, query);
         let response = self
@@ -196,10 +196,10 @@ impl Client {
     /// assert_eq!(ids.len(), grid_images.len());
     /// # }
     /// ```
-    pub async fn get_images_for_ids<'a>(
+    pub async fn get_images_for_ids(
         &self,
         game_id: &[usize],
-        query: &QueryType<'a>,
+        query: &QueryType<'_>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
         let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, query);
 
@@ -251,11 +251,11 @@ impl Client {
     /// let epic_games_images = client.get_images_for_platform_id(&platform, "Salt", &Grid(None)).await.unwrap();    
     /// # }
     /// ```
-    pub async fn get_images_for_platform_id<'a>(
+    pub async fn get_images_for_platform_id(
         &self,
         platform: &Platform,
         game_id: &str,
-        qeury: &QueryType<'a>,
+        qeury: &QueryType<'_>,
     ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
         let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, qeury);
         let response = self
@@ -283,11 +283,11 @@ impl Client {
     /// let epic_games_images = client.get_images_for_platform_ids(&platform, &ids, &Grid(None)).await.unwrap();    
     /// # }
     /// ```
-    pub async fn get_images_for_platform_ids<'a>(
+    pub async fn get_images_for_platform_ids(
         &self,
         platform: &Platform,
         game_id: &[&str],
-        qeury: &QueryType<'a>,
+        qeury: &QueryType<'_>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
         let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, qeury);
         let resposse = self

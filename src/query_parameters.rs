@@ -424,17 +424,16 @@ pub enum Platform{
 }
 
 
-impl Into<String> for &Platform {
-    fn into(self) -> String {
-        match self {
+impl ToString for Platform {
+    fn to_string(&self) -> String {
+          match self {
             Platform::Steam => "steam",
             Platform::Origin => "origin",
             Platform::EpicGameStore => "egs",
             Platform::BattleNet => "bnet",
             Platform::Uplay => "uplay",
             Platform::Flashpoint => "flashpoint",
-        }
-        .to_string()
+        }.to_string()        
     }
 }
 
