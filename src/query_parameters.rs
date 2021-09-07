@@ -575,6 +575,13 @@ pub enum AnimtionType {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(untagged)]
+pub enum StyleType{
+    Normal(Style),
+    Logo(StyleLogo),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 /// Image style
 pub enum Style {
     #[serde(rename = "alternate")]

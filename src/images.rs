@@ -10,7 +10,7 @@ pub struct Image {
     /// The name of the image.
     pub score: u32,
     /// The animation style of the image.
-    pub style: Style,
+    pub style: StyleType,
     
     /// The width of the image
     pub width: u32,
