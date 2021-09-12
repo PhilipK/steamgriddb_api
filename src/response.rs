@@ -25,7 +25,7 @@ impl error::Error for SteamGridDbError {}
 /// Steamgriddb response type
 pub struct Response<T> {
     /// Was the request a success?
-    pub success: bool,
+    pub success: Option<bool>,
     /// The response data
     pub data: Option<T>,
     /// The status code of the response
@@ -38,7 +38,7 @@ pub type SteamGridDbResult<T> = std::result::Result<T, SteamGridDbError>;
 
 /// Converts the reponse to a result, that is easier to work with
 pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T>> {
-    if !inner.success {
+    if !inner.success.unwrap_or(false) {
         std::result::Result::Err(SteamGridDbError {
             errors: inner.errors,
             status: inner.status,
@@ -63,7 +63,7 @@ pub fn response_to_result_flat<T>(
 where
     T: Clone,
 {
-    if !inner.success {
+    if !inner.success.unwrap_or(false) {
         std::result::Result::Err(SteamGridDbError {
             errors: inner.errors,
             status: None,
@@ -72,7 +72,7 @@ where
         match inner.data {
             Some(data) => {
                 let inner = data.iter().map(|i| {
-                    if !i.success {
+                    if !i.success.unwrap_or(false) {
                         std::result::Result::Err(SteamGridDbError {
                             errors: i.errors.clone(),
                             status: i.status,

@@ -296,7 +296,7 @@ mod tests {
     fn parse_grids_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_fo_multiple_ids.json").unwrap();
         let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.success, Some(true));
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
         assert_eq!(data.len(), 2);
@@ -315,7 +315,7 @@ mod tests {
     fn parse_heroes_test() {
         let json = std::fs::read_to_string("testdata/heroes/heroes.json").unwrap();
         let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.success, Some(true));
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
         assert_eq!(data.len(), 18);
@@ -329,7 +329,7 @@ mod tests {
     fn parse_grids_with_error_test() {
         let json = std::fs::read_to_string("testdata/grids/grids_error.json").unwrap();
         let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.success, Some(true));
         assert_eq!(game_response.data.is_some(), true);
         let data = game_response.data.unwrap();
         assert_eq!(data.len(), 2);
@@ -337,7 +337,7 @@ mod tests {
         it.next();
         let second_op = it.next();
         let second = second_op.unwrap();
-        assert_eq!(false, second.success);
+        assert_eq!(Some(false), second.success);
         assert_eq!(second.status, Some(404));
         assert_eq!(second.errors, Some(vec!["Game not found".to_string()]));
     }
@@ -346,7 +346,7 @@ mod tests {
     fn parse_grids_error_test() {
         let json = std::fs::read_to_string("testdata/grids/error.json").unwrap();
         let game_response: InnerImagesMultipleIdsResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, false);
+        assert_eq!(game_response.success, Some(false));
         assert_eq!(game_response.data.is_some(), false);
         assert_eq!(
             game_response.errors,
@@ -358,7 +358,7 @@ mod tests {
     fn parse_single_id_grid() {
         let json = std::fs::read_to_string("testdata/grids/grids_for_single_id.json").unwrap();
         let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.success, Some(true));
         assert_eq!(game_response.data.is_some(), true);
         if let Some(data) = game_response.data {
             assert_eq!(data.len(), 31);

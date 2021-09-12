@@ -42,7 +42,7 @@ mod tests {
     fn parse_search_results() {
         let json = std::fs::read_to_string("testdata/search/search.json").unwrap();
         let game_response: InnerSearchResult = serde_json::from_str(&json).unwrap();
-        assert_eq!(game_response.success, true);
+        assert_eq!(game_response.success, Some(true));
         assert_eq!(game_response.data.is_some(), true);
         assert_eq!(game_response.errors.is_none(), true);
 

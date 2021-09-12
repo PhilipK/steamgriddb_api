@@ -51,7 +51,7 @@ mod tests {
     fn parse_game_response_test() {
         let json = std::fs::read_to_string("testdata/games/game.json").unwrap();
         let game_response: GameResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(true, game_response.success);
+        assert_eq!(Some(true), game_response.success);
 
         assert_eq!(true, game_response.data.is_some());
         assert_eq!(true, game_response.errors.is_none());
@@ -66,7 +66,7 @@ mod tests {
     fn parse_game_error_response_test() {
         let json = std::fs::read_to_string("testdata/games/error.json").unwrap();
         let game_response: GameResponse = serde_json::from_str(&json).unwrap();
-        assert_eq!(false, game_response.success);
+        assert_eq!(Some(false), game_response.success);
         assert_eq!(true, game_response.errors.is_some());
         assert_eq!(vec!["Game not found"], game_response.errors.unwrap());
     }

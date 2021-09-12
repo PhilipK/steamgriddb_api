@@ -204,6 +204,18 @@ impl Client {
         game_id: &[usize],
         query: &QueryType<'_>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
+
+        if game_id.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        if game_id.len() == 1 {
+            let single_result = self.get_images_for_id(game_id[0], query).await?;
+            if !single_result.is_empty() {
+                return Ok(vec![SteamGridDbResult::Ok(single_result[0].clone())]);
+            }
+        }
+
         let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, query);
 
         let resposse = self
