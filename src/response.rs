@@ -56,7 +56,7 @@ pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T
 
 /// Converts the reponse to a result, that is easier to work with.
 /// This will also return a single list of resutls instead of a list of lists 
-/// (since there are only one element in the list anyways)
+/// (since there is only one element in the list anyways)
 pub fn response_to_result_flat<T>(
     inner: Response<Vec<Response<Vec<T>>>>,
 ) -> SteamGridDbResult<Vec<SteamGridDbResult<T>>>

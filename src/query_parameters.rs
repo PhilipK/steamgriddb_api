@@ -120,7 +120,7 @@ pub struct IconQueryParameters<'a> {
     /// The icon styles
     pub styles: Option<&'a [Style]>,
     // The icon dimentions
-    pub mimes: Option<&'a [MimeTypeLogo]>,
+    pub mimes: Option<&'a [MimeTypeIcon]>,
     // The image animation type
     pub types: Option<&'a [AnimtionType]>,
     /// If Not Safe For Work images are allowed
@@ -452,6 +452,19 @@ impl ToQueryValue for MimeType {
     }
 }
 
+impl ToQueryValue for MimeTypeIcon {
+    fn to_query_value(&self) -> QeuryValue {
+        QeuryValue {
+            name: "mimes".to_string(),
+            value: match self {
+                MimeTypeIcon::Png => "image/png",
+                MimeTypeIcon::Icon => "image/vnd.microsoft.icon",
+            }
+            .to_string(),
+        }
+    }
+}
+
 impl ToQueryValue for MimeTypeLogo {
     fn to_query_value(&self) -> QeuryValue {
         QeuryValue {
@@ -503,6 +516,17 @@ impl ToQueryValue for AnimtionType {
             .to_string(),
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+/// Mime types
+pub enum MimeTypeIcon {
+    #[serde(rename = "image/png")]
+    /// image/png
+    Png,
+    #[serde(rename = "image/vnd.microsoft.icon")]
+    /// image/webp
+    Icon,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -576,7 +600,7 @@ pub enum AnimtionType {
 
 #[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(untagged)]
-pub enum StyleType{
+pub enum StyleType {
     Normal(Style),
     Logo(StyleLogo),
 }
