@@ -28,7 +28,7 @@ pub struct Image {
     pub notes: Option<String>,
 
     /// The mimetype of the image
-    pub mime: MimeType,
+    pub mime: MimeTypes,
 
     /// The language of the image
     pub language: String,
@@ -53,6 +53,15 @@ pub struct Image {
 
     /// The author of the image
     pub author: Author,
+}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(untagged)]
+pub enum MimeTypes{
+    Default(MimeType),
+    Logo(MimeTypeLogo),
+    Icon(MimeTypeIcon)
 }
 
 /// Get an URL to request images for one game given its stemagriddb id.
@@ -398,6 +407,17 @@ mod tests {
                 assert_eq!(&Some(404), status);
                 assert_eq!(&Some(vec!["Game not found".to_string()]), errors);
             }
+        }
+    }
+
+    #[test]
+    fn parse_single_id_icon() {
+        let json = std::fs::read_to_string("testdata/icons/icons_for_single_id.json").unwrap();
+        let game_response: InnerImagesSingleIdResponse = serde_json::from_str(&json).unwrap();
+        assert_eq!(game_response.success, Some(true));
+        assert_eq!(game_response.data.is_some(), true);
+        if let Some(data) = game_response.data {
+            assert_eq!(data.len(), 2);
         }
     }
 }

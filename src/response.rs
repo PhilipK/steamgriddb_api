@@ -47,7 +47,7 @@ pub fn response_to_result<T>(inner: Response<Vec<T>>) -> SteamGridDbResult<Vec<T
         match inner.data {
             Some(data) => std::result::Result::Ok(data),
             None => std::result::Result::Err(SteamGridDbError {
-                errors: Some(vec!["Succes reported but no grids found".to_string()]),
+                errors: Some(vec!["Succes reported but no images found".to_string()]),
                 status: None,
             }),
         }
