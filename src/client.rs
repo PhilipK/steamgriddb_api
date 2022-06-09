@@ -36,7 +36,10 @@ use crate::{
 pub struct Client {
     auth_key: String,
     base_url: String,
+    #[cfg(feature = "async")]
     client: reqwest::Client,
+    #[cfg(feature = "blocking")]
+    client: reqwest::blocking::Client,
 }
 
 impl Client {
@@ -55,7 +58,13 @@ impl Client {
         S: Into<String>,
     {
         let default_base_url = "https://www.steamgriddb.com/api/v2";
+
+        #[cfg(feature = "async")]
         let client = reqwest::Client::new();
+
+        #[cfg(feature = "blocking")]
+        let client = reqwest::blocking::Client::new();
+
         Self {
             auth_key: auth_key.into(),
             base_url: default_base_url.to_owned(),
@@ -168,6 +177,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn get_images_for_id(
         &self,
         game_id: usize,
@@ -180,6 +190,16 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn get_images_for_id(
+        &self,
+        game_id: usize,
+        query: &QueryType<'_>,
+    ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
+        let url = get_images_by_game_id_url(self.base_url.as_str(), game_id, query);
+        let response = self.make_request::<InnerImagesSingleIdResponse>(url.as_str())?;
+        Ok(response_to_result(response)?)
+    }
     /// Fetches images given a list game id's and a query type.
     ///
     /// The resulting list will be a SteamGridDbResult<Image> for each id.
@@ -199,12 +219,12 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn get_images_for_ids(
         &self,
         game_id: &[usize],
         query: &QueryType<'_>,
     ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
-
         if game_id.is_empty() {
             return Ok(Vec::new());
         }
@@ -221,6 +241,29 @@ impl Client {
         let resposse = self
             .make_request::<InnerImagesMultipleIdsResponse>(url.as_str())
             .await?;
+        Ok(response_to_result_flat(resposse)?)
+    }
+
+    #[cfg(feature = "blocking")]
+    pub fn get_images_for_ids(
+        &self,
+        game_id: &[usize],
+        query: &QueryType<'_>,
+    ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
+        if game_id.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        if game_id.len() == 1 {
+            let single_result = self.get_images_for_id(game_id[0], query)?;
+            if !single_result.is_empty() {
+                return Ok(vec![SteamGridDbResult::Ok(single_result[0].clone())]);
+            }
+        }
+
+        let url = get_images_by_game_ids_url(self.base_url.as_str(), game_id, query);
+
+        let resposse = self.make_request::<InnerImagesMultipleIdsResponse>(url.as_str())?;
         Ok(response_to_result_flat(resposse)?)
     }
 
@@ -242,6 +285,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn search(
         &self,
         query: &str,
@@ -251,6 +295,12 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn search(&self, query: &str) -> Result<Vec<SearchResult>, Box<dyn std::error::Error>> {
+        let url = get_search_url(self.base_url.as_str(), query);
+        let response = self.make_request::<InnerSearchResult>(url.as_str())?;
+        Ok(response_to_result(response)?)
+    }
     /// Fetches images given a platform type, a platform specific game id and a query type.
     ///    
     /// ### Examples
@@ -268,6 +318,8 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+
+    #[cfg(feature = "async")]
     pub async fn get_images_for_platform_id(
         &self,
         platform: &Platform,
@@ -281,6 +333,17 @@ impl Client {
         Ok(response_to_result(response)?)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn get_images_for_platform_id(
+        &self,
+        platform: &Platform,
+        game_id: &str,
+        qeury: &QueryType<'_>,
+    ) -> Result<Vec<Image>, Box<dyn std::error::Error>> {
+        let url = get_images_by_platform_id_url(self.base_url.as_str(), platform, game_id, qeury);
+        let response = self.make_request::<InnerImagesSingleIdResponse>(url.as_str())?;
+        Ok(response_to_result(response)?)
+    }
     /// Fetches images given a platform type, a platform specific game ids and a query type.
     ///    
     /// The resulting list will be a SteamGridDbResult<Image> for each id.
@@ -301,6 +364,7 @@ impl Client {
     /// # Ok(())  
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn get_images_for_platform_ids(
         &self,
         platform: &Platform,
@@ -314,6 +378,17 @@ impl Client {
         Ok(response_to_result_flat(resposse)?)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn get_images_for_platform_ids(
+        &self,
+        platform: &Platform,
+        game_id: &[&str],
+        qeury: &QueryType<'_>,
+    ) -> Result<Vec<SteamGridDbResult<Image>>, Box<dyn std::error::Error>> {
+        let url = get_images_by_platform_ids_url(self.base_url.as_str(), platform, game_id, qeury);
+        let resposse = self.make_request::<InnerImagesMultipleIdsResponse>(url.as_str())?;
+        Ok(response_to_result_flat(resposse)?)
+    }
     /// Fetch information about a game given a game id.
     ///    
     /// ### Examples
@@ -328,6 +403,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn get_game_info_for_id(
         &self,
         game_id: usize,
@@ -337,6 +413,15 @@ impl Client {
         Ok(response)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn get_game_info_for_id(
+        &self,
+        game_id: usize,
+    ) -> Result<GameInfo, Box<dyn std::error::Error>> {
+        let url = get_gameinfo_by_game_id_url(self.base_url.as_str(), game_id);
+        let response = self.make_request::<GameInfo>(url.as_str())?;
+        Ok(response)
+    }
     /// Fetch information about a game given a steam game id.
     ///    
     /// ### Examples
@@ -351,6 +436,7 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(feature = "async")]
     pub async fn get_game_by_steam_app_id(
         &self,
         steam_app_id: usize,
@@ -360,6 +446,17 @@ impl Client {
         Ok(response)
     }
 
+    #[cfg(feature = "blocking")]
+    pub fn get_game_by_steam_app_id(
+        &self,
+        steam_app_id: usize,
+    ) -> Result<GameInfo, Box<dyn std::error::Error>> {
+        let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
+        let response = self.make_request::<GameInfo>(url.as_str())?;
+        Ok(response)
+    }
+
+    #[cfg(feature = "async")]
     async fn make_request<'de, T>(&self, url: &str) -> Result<T, Box<dyn std::error::Error>>
     where
         T: DeserializeOwned,
@@ -372,6 +469,19 @@ impl Client {
             .await?
             .json::<T>()
             .await?)
+    }
+
+    #[cfg(feature = "blocking")]
+    fn make_request<'de, T>(&self, url: &str) -> Result<T, Box<dyn std::error::Error>>
+    where
+        T: DeserializeOwned,
+    {
+        Ok(self
+            .client
+            .get(url)
+            .bearer_auth(self.auth_key.as_str())
+            .send()?
+            .json::<T>()?)
     }
 
     /// Get a SteamStaticUrls that contains the expected urls for the official Steam store images.

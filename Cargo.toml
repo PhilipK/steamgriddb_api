@@ -7,7 +7,7 @@ repository = "https://github.com/PhilipK/steamgriddb_api"
 documentation = "https://docs.rs/steamgriddb_api/0.1.1/steamgriddb_api/"
 keywords = ["api", "steam", "images"]
 categories = ["api-bindings"]
-version = "0.3.0"
+version = "0.3.1"
 edition = "2018"
 readme = "crates-io.md"
 
@@ -16,4 +16,9 @@ readme = "crates-io.md"
 urlencoding = "2.1.*"
 serde = { version = "1.0.*", features = ["derive"] }
 serde_json = "1.0.*"
-reqwest = { version = "0.11.*", features = ["json"] }
+reqwest = { version = "0.11.*", features = ["json","blocking"] }
+
+[features]
+default =["async"]
+async = []
+blocking = []
