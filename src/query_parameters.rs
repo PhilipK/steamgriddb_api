@@ -423,7 +423,7 @@ pub enum Platform {
     /// flashpoint
     Flashpoint,
     #[serde(rename = "gog")]
-    /// bnet
+    /// gog
     GoG,
 }
 
