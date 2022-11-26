@@ -443,9 +443,8 @@ impl Client {
         steam_app_id: usize,
     ) -> Result<GameInfo, Box<dyn std::error::Error>> {
         let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
-        let response = self.make_request::<Response<GameInfo>>(url.as_str()).await?;
-        let game_info = response.data.unwrap();
-        Ok(game_info)
+     let response = self.make_request::<Response<GameInfo>>(url.as_str()).await?;
+      response.data.ok_or("Data was empty".to_string().into())
     }
 
     #[cfg(feature = "blocking")]
