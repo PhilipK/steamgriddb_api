@@ -422,6 +422,9 @@ pub enum Platform {
     #[serde(rename = "flashpoint")]
     /// flashpoint
     Flashpoint,
+    #[serde(rename = "gog")]
+    /// gog
+    GoG,
 }
 
 impl ToString for Platform {
@@ -432,6 +435,7 @@ impl ToString for Platform {
             Platform::EpicGameStore => "egs",
             Platform::BattleNet => "bnet",
             Platform::Uplay => "uplay",
+            Platform::GoG => "gog",
             Platform::Flashpoint => "flashpoint",
         }
         .to_string()

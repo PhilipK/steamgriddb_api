@@ -1,4 +1,5 @@
 use serde::de::DeserializeOwned;
+use crate::response::Response;
 
 use crate::{
     games::{get_game_by_steam_app_id_url, get_gameinfo_by_game_id_url, GameInfo},
@@ -442,8 +443,8 @@ impl Client {
         steam_app_id: usize,
     ) -> Result<GameInfo, Box<dyn std::error::Error>> {
         let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
-        let response = self.make_request::<GameInfo>(url.as_str()).await?;
-        Ok(response)
+        let response = self.make_request::<Response<GameInfo>>(url.as_str()).await?;
+        response.data.ok_or("Data was empty".to_string().into())
     }
 
     #[cfg(feature = "blocking")]
@@ -452,8 +453,8 @@ impl Client {
         steam_app_id: usize,
     ) -> Result<GameInfo, Box<dyn std::error::Error>> {
         let url = get_game_by_steam_app_id_url(self.base_url.as_str(), steam_app_id);
-        let response = self.make_request::<GameInfo>(url.as_str())?;
-        Ok(response)
+        let response = self.make_request::<Response<GameInfo>>(url.as_str())?;
+        response.data.ok_or("Data was empty".to_string().into())
     }
 
     #[cfg(feature = "async")]
